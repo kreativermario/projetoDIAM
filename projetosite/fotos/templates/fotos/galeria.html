@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Galeria</title>
+
+    <!-- Bootstrap CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <style>
+        .image-thumbnail{
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+
+
+</head>
+<body class="m-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header">
+                        Categorias
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Todas</li>
+                        <li class="list-group-item">Cras justo odio</li>
+                        <li class="list-group-item">Dapibus ac facilisis in</li>
+                        <li class="list-group-item">Vestibulum at eros</li>
+
+                        <li class="list-group-item">
+                            <a href="{% url 'criar' %}" class="btn btn-dark btn-sm m-1">
+                                Adicionar foto</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+             <div class="col-md-9">
+                 <div class="row">
+
+                     <div class="col-md-4">
+                         <div class="card my-2">
+                             <img class="image-thumbnail" src="https://www.reykjavikcars.com/assets/img/blog/239.png" alt="Card image cap">
+                             <div class="card-body">
+                                 <small>Islândia muito giro</small>
+                             </div>
+                             <a href="{% url 'foto' 5 %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
+                        </div>
+                     </div>
+
+                     <div class="col-md-4">
+                         <div class="card my-2">
+                             <img class="image-thumbnail" src="https://viagemeturismo.abril.com.br/wp-content/uploads/2016/12/hedinsfjordur-auroraborealis-iceland.jpg" alt="Card image cap">
+                             <div class="card-body">
+                                 <small>Tudo islândia</small>
+                             </div>
+                             <a href="{% url 'foto' 5 %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
+                        </div>
+                     </div>
+
+                     <div class="col-md-4">
+                         <div class="card my-2">
+                             <img class="image-thumbnail" src="https://img.emg-services.net/HtmlPages/HtmlPage13470/untitled-design-31.jpg" alt="Card image cap">
+                             <div class="card-body">
+                                 <small>Mais islandia</small>
+                             </div>
+                             <a href="{% url 'foto' 5 %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
+                        </div>
+                     </div>
+
+                     <div class="col-md-4">
+                         <div class="card my-2">
+                             <img class="image-thumbnail" src="https://conteudo.imguol.com.br/c/entretenimento/46/2018/07/30/cidade-de-reykjavik-na-islandia-1532980454858_v2_3x4.jpg" alt="Card image cap">
+                             <div class="card-body">
+                                 <small>Islândia outra vez</small>
+                             </div>
+                             <a href="{% url 'foto' 5 %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
+                        </div>
+                     </div>
+
+                 </div>
+
+
+            </div>
+
+
+        </div>
+    </div>
+</body>
+</html>
