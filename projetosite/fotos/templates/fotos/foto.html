@@ -13,13 +13,14 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col">
-                <a href="{% url 'galeria' %}" class="btn btn-dark my-3">Voltar</a>
+                <a href="{% url 'fotos:galeria' %}" class="btn btn-dark my-3">Voltar</a>
 
                 <div style="height: 90vh;">
                     <h1>{{foto.titulo}}</h1>
                     <img style="max-width: 100%;max-height: 100%"
                          src="{{foto.imagem.url}}" alt="Foto">
                     <p>{{foto.descricao}}</p>
+                    <button type="button" class="btn btn-primary btn-lg">Large button</button>
                 </div>
 
             </div>

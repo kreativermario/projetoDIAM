@@ -1,23 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Galeria</title>
+{% extends 'base.html' %}
 
-    <!-- Bootstrap CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+{% block title %}
+Galeria
+{% endblock %}
+{% block css %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/galeria.css' %}">
+{% endblock %}
 
-    <style>
-        .image-thumbnail{
-            height: 200px;
-            object-fit: cover;
-        }
-    </style>
-
-
-</head>
+{% block content %}
 <body class="m-5">
     <div class="container">
         <!--sidebar com filtros-->
@@ -28,15 +19,35 @@
                         Categorias
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Todas</li>
+                        <li class="list-group-item">
+                            <a href="{% url 'fotos:galeria' %}">Todas</a>
+                        </li>
                         {% for categoria in categorias %}
-                            <li class="list-group-item">{{categoria.nome}}</li>
+                            <li class="list-group-item">
+                                <!--Mandar um GET-->
+                                <a href="{% url 'fotos:galeria' %}?categoria={{categoria.nome}}">
+                                    {{categoria.nome}}
+                                </a>
+                            </li>
                         {% endfor %}
 
                         <li class="list-group-item">
-                            <a href="{% url 'criar' %}" class="btn btn-dark btn-sm m-1">
+                            <a href="{% url 'fotos:criar' %}" class="btn btn-dark btn-sm m-1">
                                 Adicionar foto</a>
                         </li>
+                        {% if user.is_authenticated %}
+                        <li class="list-group-item">
+                            <a href="{% url 'fotos:processlogout' %}" class="btn btn-outline-dark btn-sm m-1">
+                                Logout</a>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item">
+                            <a href="{% url 'fotos:login' %}" class="btn btn-outline-dark btn-sm m-1">
+                                Login</a>
+                        </li>
+                        {% endif %}
+
+
                     </ul>
                 </div>
             </div>
@@ -52,7 +63,7 @@
                              <div class="card-body">
                                  <h5 class="card-title">{{foto.titulo}} <span class="badge rounded-pill bg-dark">{{foto.categoria.nome}}</span></h5>
                              </div>
-                             <a href="{% url 'foto' foto.id %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
+                             <a href="{% url 'fotos:foto' foto.id %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
                         </div>
                      </div>
                      {% empty %}
@@ -68,4 +79,4 @@
         </div>
     </div>
 </body>
-</html>
+{% endblock %}
