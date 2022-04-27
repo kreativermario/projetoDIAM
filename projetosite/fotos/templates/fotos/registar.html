@@ -1,59 +1,88 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <form action="{% url 'fotos:registar' %}" method="post">
-            {% csrf_token %}
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Register</div>
-                    <div class="panel-body">
-                        {% if error_message %}
-                            <p class="bg-danger p-d ml-b">{{ error_message }}</p>
-                        {% endif %}
-                       
-                        <div class="form-group clearfix">
-                            <label for="{{ form.username.id_for_label }}" class="col-md-4 control-label text-right">Username<span class="text-red">*</span>:</label>
-                            <div class="col-md-6">
+<section class="background-radial-gradient overflow-hidden">
+
+    <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+        <div class="row gx-lg-5 align-items-center mb-5">
+            <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
+                <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+                    Registe a sua conta<br />
+                    <span style="color: hsl(218, 81%, 75%)">FStoppers</span>
+                </h1>
+                <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+                    O que pode fazer com uma conta?
+                    Criar posts, dar likes e comentar nas fotos!
+                </p>
+            </div>
+
+            <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+                <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+                <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+
+                <div class="card bg-glass">
+                    <div class="card-body px-4 py-5 px-md-5">
+                        <form action="{% url 'fotos:registar' %}" method="post">
+                            {% csrf_token %}
+                            {% if error_message %}
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <strong>Holy guacamole!</strong> Algo não funciona...<br>
+                                <u>{{ error_message }}</u>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
+
+                            <div class="form-outline mb-4">
                                 {{ form.username }}
+                                <label class="form-label" for="{{ form.username.id_for_label }}">Username<span class="text-red">*</span></label>
                             </div>
-                        </div>
-                        <div class="form-group clearfix">
-                            <label for="{{ form.email.id_for_label }}" class="col-md-4 control-label text-right">Email<span class="text-red">*</span>:</label>
-                            <div class="col-md-6">
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        {{ form.primeiro_nome }}
+                                        <label class="form-label" for="{{ form.primeiro_nome.id_for_label }}">Primeiro nome<span class="text-red">*</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        {{ form.ultimo_nome }}
+                                        <label class="form-label" for="{{ form.ultimo_nome.id_for_label }}">Último nome<span class="text-red">*</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email input -->
+                            <div class="form-outline mb-4">
                                 {{ form.email }}
+                                <label class="form-label" for="{{ form.email.id_for_label }}">Endereço email<span class="text-red">*</span></label>
                             </div>
-                        </div>
-                        <div class="form-group clearfix">
-                            <label for="{{ form.password.id_for_label }}" class="col-md-4 control-label text-right">Password<span class="text-red">*</span>:</label>
-                            <div class="col-md-6">
+
+
+                            <!-- Password input -->
+                            <div class="form-outline mb-4">
                                 {{ form.password }}
+                                <label class="form-label" for="{{ form.password.id_for_label }}">Password<span class="text-red">*</span></label>
                             </div>
-                        </div>
-                        <div class="form-group clearfix">
-                            <label for="{{ form.password_repeat.id_for_label }}" class="col-md-4 control-label text-right">Confirmar password:</label>
-                            <div class="col-md-6">
+
+                            <!-- Confirm Password input -->
+                            <div class="form-outline mb-4">
                                 {{ form.password_repeat }}
+                                <label class="form-label" for="{{ form.password_repeat.id_for_label }}">Confirmar password<span class="text-red">*</span></label>
                             </div>
-                        </div>
-                        <div class="form-group clearfix">
-                            <label for="{{ form.first_name.id_for_label }}" class="col-md-4 control-label text-right">Primeiro Nome:</label>
-                            <div class="col-md-6">
-                                {{ form.primeiro_nome }}
-                            </div>
-                        </div>
-                        <div class="form-group clearfix">
-                            <label for="{{ form.last_name.id_for_label }}" class="col-md-4 control-label text-right">Último Nome:</label>
-                            <div class="col-md-6">
-                                {{ form.ultimo_nome }}
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-md-offset-4">
-                            <input type="submit" value="Registar" class="btn btn-success">
-                        </div>
+
+                            <!-- Submit button -->
+                            <button type="submit" class="btn btn-primary btn-block mb-4">
+                                Registar
+                            </button>
+
+
+
+                        </form>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
+</section>
 {% endblock %}

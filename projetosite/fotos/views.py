@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from .models import Categoria, Foto, Utilizador
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect
 from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
@@ -62,6 +62,7 @@ def is_member(user):
     return user.groups.filter(name='utilizadores').exists()
 
 
+@login_required(login_url=django.urls.reverse_lazy('fotos:login'))
 @user_passes_test(is_member)
 def criarFoto(request):
     categorias = Categoria.objects.all()
@@ -121,13 +122,15 @@ def registar(request):
                 })
             else:
                 user =  User.objects.create_user(
-                    form.cleaned_data['username'],
-                    form.cleaned_data['email'],
-                    form.cleaned_data['password']
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    first_name=form.cleaned_data['primeiro_nome'],
+                    last_name=form.cleaned_data['ultimo_nome'],
+                    password=form.cleaned_data['password']
                 )
-                user.primeiro_nome = form.cleaned_data['primeiro_nome']
-                user.ultimo_nome = form.cleaned_data['ultimo_nome']
                 utilizador = Utilizador(user=user)
+                group = Group.objects.get(name='utilizadores')
+                user.groups.add(group)
                 utilizador.save()
 
                 # Login the user
