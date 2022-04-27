@@ -34,13 +34,18 @@ def index(request):
 
 def galeria(request):
     categoria = request.GET.get('categoria')
-    sorting = request.GET.get('sorting')
+    sort_data = request.GET.get('sort_data')
     if categoria is None:
         fotos = Foto.objects.all()
     else:
         # Aplicar filtro
         fotos = Foto.objects.filter(categoria__nome__contains=categoria)
-
+    if sort_data is not None:
+        print("SORTING --> ",sort_data)
+        if sort_data == 'dataAscendente':
+            fotos = Foto.objects.order_by('created_date')
+        else:
+            fotos = Foto.objects.order_by('-created_date')
 
     categorias = Categoria.objects.all()
     context = {

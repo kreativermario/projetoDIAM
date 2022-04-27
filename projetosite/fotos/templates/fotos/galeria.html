@@ -33,14 +33,16 @@ Galeria
                         <form action="{% url 'fotos:galeria' %}" method="get">
                             {% csrf_token %}
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="data" id="dataAscendente">
+                                <input class="form-check-input" type="radio" name="sort_data" id="dataAscendente"
+                                       value="dataAscendente">
                                 <label class="form-check-label" for="dataAscendente">
                                     Data Ascendente
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="data" id="dataDescendente">
-                                <label class="form-check-label" for="dataDescendente">
+                                <input class="form-check-input" type="radio" name="sort_data" id="dataDecrescente"
+                                    value="dataDecrescente">
+                                <label class="form-check-label" for="dataDecrescente">
                                     Data Descendente
                                 </label>
                             </div>
@@ -83,6 +85,8 @@ Galeria
                                 {{foto.titulo}}<span class="badge rounded-pill bg-dark">{{foto.categoria.nome}}</span>
                             </h5>
                             <p><strong>Autor:</strong> {{foto.author.username}}</p>
+                            <p><strong>Data:</strong> {{foto.created_date}}</p>
+                            <p><strong>Likes:</strong> {{foto.number_of_likes}}</p>
                         </div>
 
                         <a href="{% url 'fotos:foto' foto.id %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
