@@ -26,12 +26,34 @@ Galeria
                         </a>
                     </li>
                     {% endfor %}
-
+                    <div class="card-header">
+                        Sort
+                    </div>
+                    <li class="list-group-item">
+                        <form action="{% url 'fotos:galeria' %}" method="get">
+                            {% csrf_token %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="data" id="dataAscendente">
+                                <label class="form-check-label" for="dataAscendente">
+                                    Data Ascendente
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="data" id="dataDescendente">
+                                <label class="form-check-label" for="dataDescendente">
+                                    Data Descendente
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary btn-block mt-2">
+                                Filtrar
+                            </button>
+                        </form>
+                    </li>
+                    {% if user.is_authenticated %}
                     <li class="list-group-item">
                         <a href="{% url 'fotos:criar' %}" class="btn btn-dark btn-sm m-1">
                             Adicionar foto</a>
                     </li>
-                    {% if user.is_authenticated %}
                     <li class="list-group-item">
                         <a href="{% url 'fotos:processlogout' %}" class="btn btn-outline-dark btn-sm m-1">
                             Logout</a>
@@ -57,8 +79,12 @@ Galeria
                     <div class="card my-2">
                         <img class="image-thumbnail" src="{{foto.imagem.url}}" alt="Card image cap">
                         <div class="card-body">
-                            <h5 class="card-title">{{foto.titulo}} <span class="badge rounded-pill bg-dark">{{foto.categoria.nome}}</span></h5>
+                            <h5 class="card-title">
+                                {{foto.titulo}}<span class="badge rounded-pill bg-dark">{{foto.categoria.nome}}</span>
+                            </h5>
+                            <p><strong>Autor:</strong> {{foto.author.username}}</p>
                         </div>
+
                         <a href="{% url 'fotos:foto' foto.id %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>
                     </div>
                 </div>

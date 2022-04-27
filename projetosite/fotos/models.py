@@ -1,4 +1,6 @@
-from django.core.validators import MinValueValidator
+from django.contrib.auth import get_user_model
+from django.utils.timezone import now
+from django.core.validators import MinValueValidator, MinLengthValidator, MaxLengthValidator
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -16,7 +18,15 @@ class Foto(models.Model):
     imagem = models.ImageField(null=False, blank=False)
     titulo = models.CharField(max_length=250, null=False, blank=False)
     descricao = models.TextField()
-    likes = models.IntegerField(default= 0, validators=[MinValueValidator(0)])
+    created_date = models.DateTimeField(default=now)
+    likes = models.ManyToManyField(User, related_name='fotos_like')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, default="")
+
+    def number_of_likes(self):
+        return self.likes.count()
+
+    class Meta:
+        ordering = ('created_date',)
 
 
 class Utilizador(models.Model):
@@ -27,3 +37,4 @@ class Utilizador(models.Model):
         permissions = [
             ("criar_post", "Pode criar posts"),
         ]
+

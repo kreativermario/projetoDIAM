@@ -1,5 +1,7 @@
 import django.urls
-from django.shortcuts import render, redirect
+from django.views import View
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Categoria, Foto, Utilizador
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth import authenticate, login, logout
@@ -30,10 +32,9 @@ def index(request):
     return render(request, 'fotos/index.html', context)
 
 
-
-
 def galeria(request):
     categoria = request.GET.get('categoria')
+    sorting = request.GET.get('sorting')
     if categoria is None:
         fotos = Foto.objects.all()
     else:
@@ -52,17 +53,44 @@ def galeria(request):
 
 def verFoto(request, pk):
     foto = Foto.objects.get(id=pk)
+    likes = foto.number_of_likes()
+    print(foto.likes.all())
+    print(likes)
+    liked = False
+    if foto.likes.filter(id=request.user.id).exists():
+        liked = True
+    if request.method == 'POST':
+        if request.POST.get('like') is not None:
+            if foto.likes.filter(id=request.user.id).exists():
+                liked = True
+                context = {
+                    'foto': foto,
+                    'likes': likes,
+                    'foto_is_liked': liked,
+                }
+            else:
+                foto.likes.add(request.user)
+        if request.POST.get('dislike') is not None:
+            if foto.likes.filter(id=request.user.id).exists():
+                foto.likes.remove(request.user)
+        return redirect(request.META['HTTP_REFERER'])
+
     context = {
-        'foto': foto
+        'foto': foto,
+        'likes': likes,
+        'foto_is_liked': liked,
     }
+
     return render(request, 'fotos/foto.html', context)
+
+
 
 
 def is_member(user):
     return user.groups.filter(name='utilizadores').exists()
 
 
-@login_required(login_url=django.urls.reverse_lazy('fotos:login'))
+@login_required(login_url=reverse_lazy('fotos:login'))
 @user_passes_test(is_member)
 def criarFoto(request):
     categorias = Categoria.objects.all()
@@ -72,7 +100,6 @@ def criarFoto(request):
         imagem = request.FILES.get('imagem')
         titulo = data['titulo']
         descricao = data['descricao']
-
         if data['categoria'] != "none":
             categoria = Categoria.objects.get(id=data['categoria'])
         elif data['novaCategoria'] != '':
@@ -87,6 +114,7 @@ def criarFoto(request):
             titulo = titulo,
             descricao = descricao,
             imagem = imagem,
+            author = request.user
         )
 
         return redirect('fotos:galeria')
@@ -145,7 +173,6 @@ def registar(request):
     return render(request, template, {'form': form})
 
 
-
 def user_login(request):
     if request.method == 'POST':
         # Process the request if posted data are available
@@ -164,6 +191,8 @@ def user_login(request):
     else:
         # No post data availabe, let's just show the page to the user.
         return render(request, 'fotos/login.html')
+
+
 
 
 def process_logout(request):

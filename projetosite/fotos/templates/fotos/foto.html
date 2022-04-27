@@ -10,22 +10,34 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 <body class="m-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col">
-                <a href="{% url 'fotos:galeria' %}" class="btn btn-dark my-3">Voltar</a>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col">
+            <a href="{% url 'fotos:galeria' %}" class="btn btn-dark my-3">Voltar</a>
 
-                <div style="height: 90vh;">
-                    <h1>{{foto.titulo}}</h1>
-                    <img style="max-width: 100%;max-height: 100%"
-                         src="{{foto.imagem.url}}" alt="Foto">
-                    <p>{{foto.descricao}}</p>
-                    <button type="button" class="btn btn-primary btn-lg">Large button</button>
-                </div>
-
+            <div style="height: 90vh;">
+                <h1>{{foto.titulo}}</h1>
+                <img style="max-width: 100%;max-height: 100%"
+                     src="{{foto.imagem.url}}" alt="Foto">
+                <p>{{foto.descricao}}</p>
+                {% if user.is_authenticated %}
+                <form action="{% url 'fotos:foto' foto.id %}" method="POST">
+                    {% csrf_token %}
+                    {% if foto_is_liked %}
+                    <button type="submit" name="dislike" value="{{object.id}}" class="btn btn-info">Unlike</button>
+                    {% else %}
+                    <button type="submit" name="like" value="{{object.id}}" class="btn btn-info">Like</button>
+                    {% endif %}
+                </form>
+                <strong>{{foto.number_of_likes}}</strong>
+                {% else %}
+                <a class="btn btn-outline-info" href="{% url 'login' %}?next={{request.path}}">Log in to like this article!</a><br>
+                {% endif %}
             </div>
+
         </div>
     </div>
+</div>
 
 </body>
 </html>
