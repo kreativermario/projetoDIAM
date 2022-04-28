@@ -34,18 +34,23 @@ def index(request):
 
 def galeria(request):
     categoria = request.GET.get('categoria')
-    sort_data = request.GET.get('sort_data')
+    sort = request.GET.get('sort')
     if categoria is None:
         fotos = Foto.objects.all()
     else:
         # Aplicar filtro
         fotos = Foto.objects.filter(categoria__nome__contains=categoria)
-    if sort_data is not None:
-        print("SORTING --> ",sort_data)
-        if sort_data == 'dataAscendente':
+    if sort is not None:
+        # Sort ascendente por data
+        if sort == 'dataAscendente':
             fotos = Foto.objects.order_by('created_date')
-        else:
+        # Sort decrescente por data
+        elif sort == 'dataDecrescente':
             fotos = Foto.objects.order_by('-created_date')
+        # Sort por likes decrescente
+        else:
+            unsorted_fotos = fotos.all()
+            fotos = sorted(unsorted_fotos, key=lambda t: t.number_of_likes(), reverse=True)
 
     categorias = Categoria.objects.all()
     context = {
@@ -59,8 +64,7 @@ def galeria(request):
 def verFoto(request, pk):
     foto = Foto.objects.get(id=pk)
     likes = foto.number_of_likes()
-    print(foto.likes.all())
-    print(likes)
+    is_allowed = is_member(request.user)
     liked = False
     if foto.likes.filter(id=request.user.id).exists():
         liked = True
@@ -72,18 +76,21 @@ def verFoto(request, pk):
                     'foto': foto,
                     'likes': likes,
                     'foto_is_liked': liked,
+                    'is_allowed': is_allowed
                 }
             else:
                 foto.likes.add(request.user)
         if request.POST.get('dislike') is not None:
             if foto.likes.filter(id=request.user.id).exists():
                 foto.likes.remove(request.user)
+        # Fazer 'refresh' para a página anterior que era esta
         return redirect(request.META['HTTP_REFERER'])
 
     context = {
         'foto': foto,
         'likes': likes,
         'foto_is_liked': liked,
+        'is_allowed': is_allowed
     }
 
     return render(request, 'fotos/foto.html', context)
@@ -96,7 +103,7 @@ def is_member(user):
 
 
 @login_required(login_url=reverse_lazy('fotos:login'))
-@user_passes_test(is_member)
+@user_passes_test(is_member, login_url=reverse_lazy('fotos:login'))
 def criarFoto(request):
     categorias = Categoria.objects.all()
 
