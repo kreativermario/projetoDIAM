@@ -212,4 +212,20 @@ def process_logout(request):
 
 @login_required(login_url=reverse_lazy('fotos:login'))
 def profile(request):
-    return render(request, 'fotos/profile.html')
+    likes_count = 0
+    fotos = Foto.objects.all()
+    fotos_autor = fotos.filter(autor=request.user.id)
+    autor_count = fotos_autor.count()
+    for foto in fotos:
+        likes_count += foto.likes.filter(id=request.user.id).count()
+
+    context = {
+        "fotos": fotos_autor,
+        "likes_count": likes_count,
+        "autor_count": autor_count
+    }
+    return render(request, 'fotos/profile.html', context)
+
+
+def profile_edit(request):
+    return render(request, 'fotos/profile_edit.html')

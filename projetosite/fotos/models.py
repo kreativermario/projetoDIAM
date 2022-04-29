@@ -31,8 +31,14 @@ class Foto(models.Model):
 
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_img = models.ImageField(upload_to="profiles", default="/stock/profile_stock.jpg")
+    profile_img = models.ImageField( upload_to='profile/', blank=True)
     about = models.CharField(max_length=250, null=True, blank=True)
+
+    def image_url(self):
+        if self.profile_img and hasattr(self.profile_img, 'url'):
+            return self.profile_img.url
+        else:
+            return '/static/images/profile/default.jpg'
 
     class Meta:
         permissions = [
