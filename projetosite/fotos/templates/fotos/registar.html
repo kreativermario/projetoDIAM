@@ -22,7 +22,7 @@
 
                 <div class="card bg-glass">
                     <div class="card-body px-4 py-5 px-md-5">
-                        <form action="{% url 'fotos:registar' %}" method="post">
+                        <form action="{% url 'fotos:registar' %}" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             {% if error_message %}
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -34,20 +34,20 @@
 
                             <div class="form-outline mb-4">
                                 {{ form.username }}
-                                <label class="form-label" for="{{ form.username.id_for_label }}">Username<span class="text-red">*</span></label>
+                                <label class="form-label" for="{{ form.username.id_for_label }}">Username<span style="color:red">*</span></label>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-4">
                                     <div class="form-outline">
                                         {{ form.primeiro_nome }}
-                                        <label class="form-label" for="{{ form.primeiro_nome.id_for_label }}">Primeiro nome<span class="text-red">*</span></label>
+                                        <label class="form-label" for="{{ form.primeiro_nome.id_for_label }}">Primeiro nome<span style="color:red">*</span></label>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <div class="form-outline">
                                         {{ form.ultimo_nome }}
-                                        <label class="form-label" for="{{ form.ultimo_nome.id_for_label }}">Último nome<span class="text-red">*</span></label>
+                                        <label class="form-label" for="{{ form.ultimo_nome.id_for_label }}">Último nome<span style="color:red">*</span></label>
                                     </div>
                                 </div>
                             </div>
@@ -55,20 +55,29 @@
                             <!-- Email input -->
                             <div class="form-outline mb-4">
                                 {{ form.email }}
-                                <label class="form-label" for="{{ form.email.id_for_label }}">Endereço email<span class="text-red">*</span></label>
+                                <label class="form-label" for="{{ form.email.id_for_label }}">Endereço email<span style="color:red">*</span></label>
                             </div>
 
 
                             <!-- Password input -->
                             <div class="form-outline mb-4">
                                 {{ form.password }}
-                                <label class="form-label" for="{{ form.password.id_for_label }}">Password<span class="text-red">*</span></label>
+                                <label class="form-label" for="{{ form.password.id_for_label }}">Password<span style="color:red">*</span></label>
                             </div>
 
                             <!-- Confirm Password input -->
                             <div class="form-outline mb-4">
                                 {{ form.password_repeat }}
-                                <label class="form-label" for="{{ form.password_repeat.id_for_label }}">Confirmar password<span class="text-red">*</span></label>
+                                <label class="form-label" for="{{ form.password_repeat.id_for_label }}">Confirmar password<span style="color:red">*</span></label>
+                            </div>
+
+                            <!-- Foto perfil input -->
+                            <div class="form-outline mb-4">
+                                <div class="input-group mb-2">
+                                    <input type="file" class="form-control" id="foto_perfil" name="foto_perfil">
+                                    <label class="input-group-text" for="foto_perfil">Upload</label>
+                                </div>
+                                <label class="form-label" for="foto_perfil">Foto de perfil</label>
                             </div>
 
                             <!-- Submit button -->

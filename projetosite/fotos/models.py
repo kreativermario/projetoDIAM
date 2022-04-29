@@ -20,7 +20,7 @@ class Foto(models.Model):
     descricao = models.TextField()
     created_date = models.DateTimeField(default=now)
     likes = models.ManyToManyField(User, related_name='fotos_like')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default="")
+    autor = models.ForeignKey(User, on_delete=models.CASCADE, default="")
 
     def number_of_likes(self):
         return self.likes.count()
@@ -31,7 +31,8 @@ class Foto(models.Model):
 
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_img = models.ImageField(blank = True, null=True)
+    profile_img = models.ImageField(upload_to="profiles", default="/stock/profile_stock.jpg")
+    about = models.CharField(max_length=250, null=True, blank=True)
 
     class Meta:
         permissions = [

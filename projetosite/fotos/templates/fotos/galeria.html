@@ -13,7 +13,7 @@ Galeria
         <div class="col-md-3">
             <div class="card" style="width: 18rem;">
                 <div class="card-header">
-                    Categorias
+                    Procura por título
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
@@ -27,13 +27,16 @@ Galeria
                             </div>
                         </form>
                     </li>
+                    <div class="card-header">
+                        Categorias
+                    </div>
                     <li class="list-group-item">
-                        <a href="{% url 'fotos:galeria' %}">Todas</a>
+                        <a href="{% url 'fotos:galeria' %}" class="hover_link">Todas</a>
                     </li>
                     {% for categoria in categorias %}
                     <li class="list-group-item">
                         <!--Mandar um GET-->
-                        <a href="{% url 'fotos:galeria' %}?categoria={{categoria.nome}}">
+                        <a href="{% url 'fotos:galeria' %}?categoria={{categoria.nome}}" class="hover_link">
                             {{categoria.nome}}
                         </a>
                     </li>
@@ -104,7 +107,7 @@ Galeria
                                 {{foto.titulo}}<span class="badge rounded-pill bg-dark">{{foto.categoria.nome}}</span>
                             </h5>
                             <p><strong>Autor:</strong>
-                                <span class="badge rounded-pill bg-primary mx-1">{{foto.author.username}}</span>
+                                <span class="badge rounded-pill bg-primary mx-1">{{foto.autor.username}}</span>
                             </p>
                             <p><strong>Data de upload:</strong> {{foto.created_date}}</p>
                             <p><strong>Likes:</strong> {{foto.number_of_likes}}</p>

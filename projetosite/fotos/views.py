@@ -130,7 +130,7 @@ def criarFoto(request):
             titulo = titulo,
             descricao = descricao,
             imagem = imagem,
-            author = request.user
+            autor = request.user
         )
 
         return redirect('fotos:galeria')
@@ -147,7 +147,7 @@ def registar(request):
     if request.method == 'POST':
 
         form = RegisterForm(request.POST)
-
+        foto_perfil = request.FILES.get('foto_perfil')
         if form.is_valid():
             if User.objects.filter(username=form.cleaned_data['username']).exists():
                 return render(request, template, {
@@ -165,24 +165,22 @@ def registar(request):
                     'error_message': 'Passwords não coincidem.'
                 })
             else:
-                user =  User.objects.create_user(
+                user = User.objects.create_user(
                     username=form.cleaned_data['username'],
                     email=form.cleaned_data['email'],
                     first_name=form.cleaned_data['primeiro_nome'],
                     last_name=form.cleaned_data['ultimo_nome'],
-                    password=form.cleaned_data['password']
+                    password=form.cleaned_data['password'],
                 )
-                utilizador = Utilizador(user=user)
+                utilizador = Utilizador(user=user, profile_img=foto_perfil)
                 group = Group.objects.get(name='utilizadores')
                 user.groups.add(group)
                 utilizador.save()
-
-                # Login the user
+                # Login
                 login(request, user)
 
                 return redirect('fotos:galeria')
 
-    # No post data availabe, let's just show the page.
     else:
         form = RegisterForm()
 
@@ -191,26 +189,27 @@ def registar(request):
 
 def user_login(request):
     if request.method == 'POST':
-        # Process the request if posted data are available
+
         username = request.POST['username']
         password = request.POST['password']
-        # Check username and password combination if correct
         user = authenticate(username=username, password=password)
         if user is not None:
-            # Save session as cookie to login the user
+
             login(request, user)
-            # Success, now let's login the user.
             return redirect('fotos:galeria')
+
         else:
-            # Incorrect credentials, let's throw an error to the screen.
             return render(request, 'fotos/login.html', {'error_message': 'Username e/ou password incorretos!'})
+
     else:
-        # No post data availabe, let's just show the page to the user.
         return render(request, 'fotos/login.html')
-
-
 
 
 def process_logout(request):
         logout(request)
         return redirect('fotos:login')
+
+
+@login_required(login_url=reverse_lazy('fotos:login'))
+def profile(request):
+    return render(request, 'fotos/profile.html')
