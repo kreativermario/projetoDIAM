@@ -335,47 +335,39 @@ Perfil
                                     <p class="lead fw-normal mb-1">Editar os meus dados</p>
 
                                     <div class="p-4" style="background-color: #f8f9fa;">
-                                        <form method="POST" action="{% url 'fotos:criar' %}" enctype="multipart/form-data">
+                                        <form method="POST" action="{% url 'fotos:profile_edit' %}" enctype="multipart/form-data">
                                             {% csrf_token %}
-                                            <div class="form-group m-3">
-                                                <label for="titulo">Título</label>
-                                                <textarea required class="form-control" placeholder="Título" id="titulo"
-                                                          name="titulo"></textarea>
-                                            </div>
-
-                                            <div class="form-group m-3">
-                                                <label for="descricao">Descrição</label>
-                                                <textarea required class="form-control" placeholder="Descrição" id="descricao"
-                                                          rows="6" name="descricao"></textarea>
-                                            </div>
-
-                                            <div class="form-group m-3">
-                                                <label for="selectCategoria">Selecione uma categoria</label>
-                                                <select class="form-select form-select-sm "
-                                                        aria-label=".form-select-sm"
-                                                        name="categoria" id="selectCategoria">
-                                                    <option selected value="none">Selecione uma categoria...</option>
-                                                    {% for categoria in categorias %}
-                                                    <option value="{{categoria.id}}">{{categoria.nome}}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group m-3">
-                                                <label for="novaCategoria">Nova categoria</label>
-                                                <input name="novaCategoria" id="novaCategoria"
-                                                       type="text" placeholder="Nova categoria"
-                                                       class="form-control">
-                                            </div>
-
-                                            <div class="form-group m-3">
-                                                <div class="input-group input-group-sm mb-3">
-                                                    <input required type="file" class="form-control" id="imagem" name="imagem">
-                                                    <label class="input-group-text" for="imagem">Upload</label>
+                                            <div class="row mb-4">
+                                                <div class="col">
+                                                    <label for="primeiro_nome">Primeiro Nome</label>
+                                                    <input id="primeiro_nome" name="primeiro_nome" type="text"
+                                                           class="form-control" placeholder="Primeiro Nome" aria-label="Primeiro Nome">
+                                                </div>
+                                                <div class="col">
+                                                    <label for="ultimo_nome">Último Nome</label>
+                                                    <input id="ultimo_nome" name="ultimo_nome" type="text"
+                                                           class="form-control" placeholder="Último Nome" aria-label="Último Nome">
                                                 </div>
                                             </div>
 
-                                            <button type="submit" class="btn btn-primary m-3">Submeter</button>
+                                            <div class="form-outline mb-4">
+                                                <label for="sobre_mim">Sobre mim</label>
+                                                <textarea required class="form-control" placeholder="Sobre mim" id="sobre_mim"
+                                                          name="sobre_mim"></textarea>
+                                            </div>
+
+
+                                            <div class="form-outline mb-4">
+                                                <label for="profile_img" class="mb-2">Foto de perfil</label>
+                                                <div class="input-group input-group-sm mb-3">
+                                                    <input required type="file" class="form-control" id="profile_img" name="profile_img">
+                                                    <label class="input-group-text" for="profile_img">Upload</label>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary btn-block mb-4">
+                                                Editar
+                                            </button>
 
                                         </form>
 
