@@ -17,6 +17,17 @@ Galeria
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
+                        <form action="{% url 'fotos:galeria' %}" method="get">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input name="q" type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </li>
+                    <li class="list-group-item">
                         <a href="{% url 'fotos:galeria' %}">Todas</a>
                     </li>
                     {% for categoria in categorias %}
@@ -95,10 +106,10 @@ Galeria
                             <p><strong>Autor:</strong>
                                 <span class="badge rounded-pill bg-primary mx-1">{{foto.author.username}}</span>
                             </p>
-                            <p><strong>Data:</strong> {{foto.created_date}}</p>
+                            <p><strong>Data de upload:</strong> {{foto.created_date}}</p>
                             <p><strong>Likes:</strong> {{foto.number_of_likes}}</p>
 
-                        </span>
+                            </span>
                         </div>
 
                         <a href="{% url 'fotos:foto' foto.id %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>

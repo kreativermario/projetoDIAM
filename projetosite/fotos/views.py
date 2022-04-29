@@ -35,6 +35,8 @@ def index(request):
 def galeria(request):
     categoria = request.GET.get('categoria')
     sort = request.GET.get('sort')
+    url_parameter = request.GET.get('q')
+    print(request.GET)
     if categoria is None:
         fotos = Foto.objects.all()
     else:
@@ -51,6 +53,8 @@ def galeria(request):
         else:
             unsorted_fotos = fotos.all()
             fotos = sorted(unsorted_fotos, key=lambda t: t.number_of_likes(), reverse=True)
+    if url_parameter is not None:
+        fotos = Foto.objects.filter(titulo__icontains=url_parameter)
 
     categorias = Categoria.objects.all()
     context = {
