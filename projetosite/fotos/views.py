@@ -1,3 +1,5 @@
+import os
+
 import django.urls
 from django.views import View
 from django.urls import reverse_lazy, reverse
@@ -228,4 +230,27 @@ def profile(request):
 
 
 def profile_edit(request):
+
+    if request.method == 'POST':
+        data = request.POST
+        user = request.user
+        utilizador = Utilizador.objects.get(user_id=request.user.id)
+        imagem = request.FILES.get('profile_img')
+        primeiro_nome= data['primeiro_nome']
+        ultimo_nome = data['ultimo_nome']
+        about = data['sobre_mim']
+        print(utilizador)
+        print(request.POST)
+        if primeiro_nome != "":
+            user.first_name = primeiro_nome
+        elif ultimo_nome != "":
+            user.last_name = ultimo_nome
+        elif about != "":
+            utilizador.about = about
+        elif imagem is not None:
+            utilizador.profile_img = imagem
+        utilizador.save()
+        user.save()
+        return redirect('fotos:profile')
+
     return render(request, 'fotos/profile_edit.html')
