@@ -118,9 +118,6 @@ def verFoto(request, pk):
 def delete_comentario(request,pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
-    print("FOTO ID -->", foto_id)
-    print("Comentario ID -->", pk)
-    print(comentario)
     if comentario.autor == request.user:
         comentario.delete()
 
