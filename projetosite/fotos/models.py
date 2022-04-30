@@ -29,6 +29,13 @@ class Foto(models.Model):
         ordering = ('created_date',)
 
 
+class Comentario(models.Model):
+    autor = models.ForeignKey(User, on_delete=models.CASCADE, default="")
+    texto = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    foto = models.ForeignKey(Foto, on_delete=models.CASCADE)
+
+
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_img = models.ImageField( upload_to='profile/', blank=True)
@@ -43,5 +50,7 @@ class Utilizador(models.Model):
     class Meta:
         permissions = [
             ("criar_post", "Pode criar posts"),
+            ("criar_like_dislike", "Pode dar likes ou dislikes"),
+            ("criar_comentario", "Pode criar comentários"),
         ]
 

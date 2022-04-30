@@ -4,7 +4,7 @@ import django.urls
 from django.views import View
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Categoria, Foto, Utilizador
+from .models import Categoria, Foto, Utilizador, Comentario
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
@@ -69,6 +69,7 @@ def galeria(request):
 
 def verFoto(request, pk):
     foto = Foto.objects.get(id=pk)
+    comentarios = Comentario.objects.all()
     likes = foto.number_of_likes()
     is_allowed = is_member(request.user)
     liked = False
@@ -82,13 +83,24 @@ def verFoto(request, pk):
                     'foto': foto,
                     'likes': likes,
                     'foto_is_liked': liked,
-                    'is_allowed': is_allowed
+                    'is_allowed': is_allowed,
+                    'comentarios': comentarios
                 }
             else:
                 foto.likes.add(request.user)
         if request.POST.get('dislike') is not None:
             if foto.likes.filter(id=request.user.id).exists():
                 foto.likes.remove(request.user)
+        # Comentário
+        if request.POST.get('texto') is not None:
+            texto = request.POST.get('texto')
+            comentario = Comentario(
+                autor=request.user,
+                texto=texto,
+                foto=foto
+            )
+            comentario.save()
+
         # Fazer 'refresh' para a página anterior que era esta
         return redirect(request.META['HTTP_REFERER'])
 
@@ -96,12 +108,23 @@ def verFoto(request, pk):
         'foto': foto,
         'likes': likes,
         'foto_is_liked': liked,
-        'is_allowed': is_allowed
+        'is_allowed': is_allowed,
+        'comentarios': comentarios
     }
 
     return render(request, 'fotos/foto.html', context)
 
 
+def delete_comentario(request,pk):
+    comentario = get_object_or_404(Comentario, pk=pk)
+    foto_id = comentario.foto.id
+    print("FOTO ID -->", foto_id)
+    print("Comentario ID -->", pk)
+    print(comentario)
+    if comentario.autor == request.user:
+        comentario.delete()
+
+    return redirect('fotos:foto', foto_id)
 
 
 def is_member(user):
@@ -207,6 +230,7 @@ def user_login(request):
         return render(request, 'fotos/login.html')
 
 
+@login_required(login_url=reverse_lazy('fotos:login'))
 def process_logout(request):
         logout(request)
         return redirect('fotos:login')
@@ -229,6 +253,7 @@ def profile(request):
     return render(request, 'fotos/profile.html', context)
 
 
+@login_required(login_url=reverse_lazy('fotos:login'))
 def profile_edit(request):
 
     if request.method == 'POST':
@@ -239,8 +264,6 @@ def profile_edit(request):
         primeiro_nome= data['primeiro_nome']
         ultimo_nome = data['ultimo_nome']
         about = data['sobre_mim']
-        print(utilizador)
-        print(request.POST)
         if primeiro_nome != "":
             user.first_name = primeiro_nome
         elif ultimo_nome != "":

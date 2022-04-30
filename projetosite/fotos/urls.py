@@ -12,4 +12,5 @@ urlpatterns = [
     path('logout', views.process_logout, name='processlogout'),
     path('profile', views.profile, name='profile'),
     path('profile/edit', views.profile_edit, name='profile_edit'),
+    path('comentario/<str:pk>/delete', views.delete_comentario, name='delete_comentario'),
 ]
