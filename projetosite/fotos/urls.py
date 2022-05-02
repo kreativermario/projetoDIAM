@@ -6,6 +6,7 @@ urlpatterns = [
     path('g', views.index, name='index'),
     path('', views.galeria, name='galeria'),
     path('foto/<str:pk>', views.verFoto, name='foto'),
+    path('foto/<str:pk>/comentarioSubmit', views.submit_comentario, name='submit_comentario'),
     path('criar', views.criarFoto, name='criar'),
     path('registar', views.registar, name='registar'),
     path('login', views.user_login, name='login'),
@@ -13,4 +14,5 @@ urlpatterns = [
     path('profile', views.profile, name='profile'),
     path('profile/edit', views.profile_edit, name='profile_edit'),
     path('comentario/<str:pk>/delete', views.delete_comentario, name='delete_comentario'),
+
 ]

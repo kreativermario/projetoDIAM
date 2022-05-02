@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 # Create your views here.
 
-
+# Frontpage
 def index(request):
     categoria = request.GET.get('categoria')
     if categoria is None:
@@ -34,45 +34,75 @@ def index(request):
     return render(request, 'fotos/index.html', context)
 
 
+# Galeria
 def galeria(request):
+    # Filtro de categoria
     categoria = request.GET.get('categoria')
+    # Filtro de sort
     sort = request.GET.get('sort')
-    url_parameter = request.GET.get('q')
-    print(request.GET)
+    # Filtro de pesquisa
+    pesquisa = request.GET.get('q')
+
+    # Todas as categorias
+    categorias = Categoria.objects.all()
+
+    # Se não for dado filtro de categoria
     if categoria is None:
         fotos = Foto.objects.all()
+    # Aplicar filtro de categoria
     else:
-        # Aplicar filtro
         fotos = Foto.objects.filter(categoria__nome__contains=categoria)
+    # Aplicar filtro de sort
     if sort is not None:
+
         # Sort ascendente por data
         if sort == 'dataAscendente':
             fotos = Foto.objects.order_by('created_date')
+
         # Sort decrescente por data
         elif sort == 'dataDecrescente':
             fotos = Foto.objects.order_by('-created_date')
+
         # Sort por likes decrescente
         else:
             unsorted_fotos = fotos.all()
             fotos = sorted(unsorted_fotos, key=lambda t: t.number_of_likes(), reverse=True)
-    if url_parameter is not None:
-        fotos = Foto.objects.filter(titulo__icontains=url_parameter)
 
-    categorias = Categoria.objects.all()
+    # Filtro por pesquisa
+    if pesquisa is not None:
+        fotos = Foto.objects.filter(titulo__icontains=pesquisa)
+
     context = {
         'categorias': categorias,
-        'fotos' : fotos
+        'fotos': fotos
     }
 
     return render(request, 'fotos/galeria.html', context)
 
 
+
+def submit_comentario(request, pk):
+    foto = Foto.objects.get(id=pk)
+    # Comentário
+    if request.POST.get('texto') is not None:
+        texto = request.POST.get('texto')
+        comentario = Comentario(
+            autor=request.user,
+            texto=texto,
+            foto=foto
+        )
+        comentario.save()
+
+    return redirect("fotos:foto", pk)
+
+
 def verFoto(request, pk):
     foto = Foto.objects.get(id=pk)
-    comentarios = Comentario.objects.all()
+    comentarios = Comentario.objects.order_by('-created_date')
     likes = foto.number_of_likes()
     is_allowed = is_member(request.user)
     liked = False
+
     if foto.likes.filter(id=request.user.id).exists():
         liked = True
     if request.method == 'POST':
@@ -91,15 +121,6 @@ def verFoto(request, pk):
         if request.POST.get('dislike') is not None:
             if foto.likes.filter(id=request.user.id).exists():
                 foto.likes.remove(request.user)
-        # Comentário
-        if request.POST.get('texto') is not None:
-            texto = request.POST.get('texto')
-            comentario = Comentario(
-                autor=request.user,
-                texto=texto,
-                foto=foto
-            )
-            comentario.save()
 
         # Fazer 'refresh' para a página anterior que era esta
         return redirect(request.META['HTTP_REFERER'])

@@ -35,7 +35,7 @@ Foto
             </div>
             {% if user.is_authenticated and is_allowed %}
             <div class="col md-10 mt-5">
-                <form method="POST" action="{% url 'fotos:foto' foto.id %}">
+                <form method="POST" action="{% url 'fotos:submit_comentario' foto.id %}">
                     {% csrf_token %}
 
                     <div class="form-outline mb-4">
