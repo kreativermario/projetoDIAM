@@ -15,6 +15,11 @@ from django.contrib.auth.decorators import user_passes_test
 
 # Create your views here.
 
+# Ver se tem permissões!
+def is_member(user):
+    return user.groups.filter(name='utilizadores').exists()
+
+
 # Frontpage
 def index(request):
     categoria = request.GET.get('categoria')
@@ -80,20 +85,13 @@ def galeria(request):
     return render(request, 'fotos/galeria.html', context)
 
 
+def process_comentario(request, pk):
+    comentario = get_object_or_404(Comentario, pk=pk)
+    foto_id = comentario.foto.id
+    if comentario.autor == request.user:
+        comentario.delete()
 
-def submit_comentario(request, pk):
-    foto = Foto.objects.get(id=pk)
-    # Comentário
-    if request.POST.get('texto') is not None:
-        texto = request.POST.get('texto')
-        comentario = Comentario(
-            autor=request.user,
-            texto=texto,
-            foto=foto
-        )
-        comentario.save()
-
-    return redirect("fotos:foto", pk)
+    return redirect('fotos:foto', foto_id)
 
 
 def verFoto(request, pk):
@@ -123,6 +121,15 @@ def verFoto(request, pk):
         if request.POST.get('dislike') is not None:
             if foto.likes.filter(id=request.user.id).exists():
                 foto.likes.remove(request.user)
+        # Comentário
+        if request.POST.get('texto') is not None:
+            texto = request.POST.get('texto')
+            comentario = Comentario(
+                autor=request.user,
+                texto=texto,
+                foto=foto
+            )
+            comentario.save()
 
         # Fazer 'refresh' para a página anterior que era esta
         return redirect(request.META['HTTP_REFERER'])
@@ -136,19 +143,6 @@ def verFoto(request, pk):
     }
 
     return render(request, 'fotos/foto.html', context)
-
-
-def delete_comentario(request,pk):
-    comentario = get_object_or_404(Comentario, pk=pk)
-    foto_id = comentario.foto.id
-    if comentario.autor == request.user:
-        comentario.delete()
-
-    return redirect('fotos:foto', foto_id)
-
-
-def is_member(user):
-    return user.groups.filter(name='utilizadores').exists()
 
 
 @login_required(login_url=reverse_lazy('fotos:login'))
@@ -252,8 +246,8 @@ def user_login(request):
 
 @login_required(login_url=reverse_lazy('fotos:login'))
 def process_logout(request):
-        logout(request)
-        return redirect('fotos:login')
+    logout(request)
+    return redirect('fotos:login')
 
 
 @login_required(login_url=reverse_lazy('fotos:login'))

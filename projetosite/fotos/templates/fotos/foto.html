@@ -35,7 +35,7 @@ Foto
             </div>
             {% if user.is_authenticated and is_allowed %}
             <div class="col md-10 mt-5">
-                <form method="POST" action="{% url 'fotos:submit_comentario' foto.id %}">
+                <form method="POST" action="{% url 'fotos:foto' foto.id  %}">
                     {% csrf_token %}
 
                     <div class="form-outline mb-4">
@@ -73,7 +73,7 @@ Foto
                             <div class="action d-flex justify-content-between mt-2 align-items-center">
                                 <div class="reply px-4">
                                     {% if request.user == comentario.autor %}
-                                    <form method="POST" action="{% url 'fotos:delete_comentario' pk=comentario.id %}">
+                                    <form method="POST" action="{% url 'fotos:process_comentario' comentario.id %}">
                                         {% csrf_token %}
 
                                         <button type="submit" class="btn btn-danger btn-sm">
@@ -82,6 +82,21 @@ Foto
                                     </form>
                                     {% endif %}
                                 </div>
+                                <div class="reply px-4">
+                                    {% if user.is_authenticated and is_allowed %}
+                                    <form action="{% url 'fotos:process_comentario' comentario.id %}" method="POST">
+                                        {% csrf_token %}
+                                        {% if comentario_is_downvote %}
+                                        <button type="submit" name="downvote" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-down" style="color: white"></i></button>
+                                        {% else %}
+                                        <button type="submit" name="upvote" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-up" style="color: white"></i></button>
+                                        {% endif %}
+                                    </form>
+                                    <strong>{{comentario.number_of_likes}}</strong>
+                                    {% endif %}
+
+                                </div>
+
                             </div>
                         </div>
                         {% endfor %}
