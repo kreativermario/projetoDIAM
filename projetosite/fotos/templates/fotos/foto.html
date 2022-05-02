@@ -21,9 +21,9 @@ Foto
                     <form action="{% url 'fotos:foto' foto.id %}" method="POST">
                         {% csrf_token %}
                         {% if foto_is_liked %}
-                        <button type="submit" name="dislike" value="{{object.id}}" class="btn btn-info">Unlike</button>
+                        <button type="submit" name="dislike" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-down" style="color: white"></i></button>
                         {% else %}
-                        <button type="submit" name="like" value="{{object.id}}" class="btn btn-info">Like</button>
+                        <button type="submit" name="like" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-up" style="color: white"></i></button>
                         {% endif %}
                     </form>
                     <strong>{{foto.number_of_likes}}</strong>

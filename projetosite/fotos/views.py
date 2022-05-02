@@ -105,6 +105,8 @@ def verFoto(request, pk):
 
     if foto.likes.filter(id=request.user.id).exists():
         liked = True
+
+    # Likes e Dislikes
     if request.method == 'POST':
         if request.POST.get('like') is not None:
             if foto.likes.filter(id=request.user.id).exists():
