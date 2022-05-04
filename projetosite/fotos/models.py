@@ -40,6 +40,7 @@ class Comentario(models.Model):
         return self.votos.count()
 
 
+
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_img = models.ImageField( upload_to='profile/', blank=True)

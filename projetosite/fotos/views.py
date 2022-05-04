@@ -12,8 +12,18 @@ from django.http import HttpResponseRedirect
 from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
+from django import template
+
+register = template.Library()
 
 # Create your views here.
+
+# View para poder chamar métodos do model
+@register.simple_tag
+def chamar_metodo(obj, method_name, *args):
+    method = getattr(obj, method_name)
+    return method(*args)
+
 
 # Ver se tem permissões!
 def is_member(user):
@@ -96,7 +106,7 @@ def process_comentario(request, pk):
 
 def verFoto(request, pk):
     foto = Foto.objects.get(id=pk)
-    comentarios = Comentario.objects.order_by('-created_date')
+    comentarios = Comentario.objects.filter(foto_id=pk).order_by('-created_date')
     likes = foto.number_of_likes()
     is_allowed = is_member(request.user)
     liked = False
