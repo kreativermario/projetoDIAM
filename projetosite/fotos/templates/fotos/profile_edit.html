@@ -333,7 +333,6 @@ Perfil
 
                                 <div class="mb-3 mt-2">
                                     <p class="lead fw-normal mb-1">Editar os meus dados</p>
-
                                     <div class="p-4" style="background-color: #f8f9fa;">
                                         <form method="POST" action="{% url 'fotos:profile_edit' %}" enctype="multipart/form-data">
                                             {% csrf_token %}
@@ -362,6 +361,14 @@ Perfil
                                                 <div class="input-group input-group-sm mb-3">
                                                     <input type="file" class="form-control" id="profile_img" name="profile_img">
                                                     <label class="input-group-text" for="profile_img">Upload</label>
+                                                </div>
+                                            </div>
+
+                                             <div class="form-outline mb-4">
+                                                <label for="background_img" class="mb-2">Background do perfil</label>
+                                                <div class="input-group input-group-sm mb-3">
+                                                    <input type="file" class="form-control" id="background_img" name="background_img">
+                                                    <label class="input-group-text" for="background_img">Upload</label>
                                                 </div>
                                             </div>
 

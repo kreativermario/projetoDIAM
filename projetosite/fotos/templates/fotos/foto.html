@@ -86,10 +86,15 @@ Foto
                                     {% if user.is_authenticated and is_allowed %}
                                     <form action="{% url 'fotos:process_comentario' comentario.id %}" method="POST">
                                         {% csrf_token %}
-                                        {% if comentario.is_downvote %}
-                                        <button type="submit" name="downvote" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-down" style="color: white"></i></button>
+                                        {% if request.session.comentario_is_downvoted is None %}
+                                        <button type="submit" name="upvote" value="{{object.id}}"
+                                                class="btn btn-primary">
+                                            <i class="fa fa-thumbs-up" style="color: white"></i>
+                                        </button>
                                         {% else %}
-                                        <button type="submit" name="upvote" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-up" style="color: white"></i></button>
+                                        <button type="submit" name="downvote" value="{{object.id}}" class="btn btn-primary">
+                                            <i class="fa fa-thumbs-down" style="color: white"></i>
+                                        </button>
                                         {% endif %}
                                     </form>
                                     <strong>{{comentario.number_of_likes}}</strong>

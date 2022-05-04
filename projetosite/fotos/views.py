@@ -18,12 +18,6 @@ register = template.Library()
 
 # Create your views here.
 
-# View para poder chamar métodos do model
-@register.simple_tag
-def chamar_metodo(obj, method_name, *args):
-    method = getattr(obj, method_name)
-    return method(*args)
-
 
 # Ver se tem permissões!
 def is_member(user):
@@ -98,9 +92,15 @@ def galeria(request):
 def process_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
+    if request.POST.get('downvote') is not None:
+        if comentario.votos.filter(id=request.user.id).exists():
+            request.session['comentario_is_downvote'] = "true"
+        else:
+            comentario.votos.add(request.user)
+
+
     if comentario.autor == request.user:
         comentario.delete()
-
     return redirect('fotos:foto', foto_id)
 
 
@@ -110,7 +110,6 @@ def verFoto(request, pk):
     likes = foto.number_of_likes()
     is_allowed = is_member(request.user)
     liked = False
-
     if foto.likes.filter(id=request.user.id).exists():
         liked = True
 
@@ -285,17 +284,21 @@ def profile_edit(request):
         user = request.user
         utilizador = Utilizador.objects.get(user_id=request.user.id)
         imagem = request.FILES.get('profile_img')
+        background_img = request.FILES.get('background_img')
         primeiro_nome= data['primeiro_nome']
         ultimo_nome = data['ultimo_nome']
         about = data['sobre_mim']
+        print(request.POST)
         if primeiro_nome != "":
             user.first_name = primeiro_nome
-        elif ultimo_nome != "":
+        if ultimo_nome != "":
             user.last_name = ultimo_nome
-        elif about != "":
+        if about != "":
             utilizador.about = about
-        elif imagem is not None:
+        if imagem is not None:
             utilizador.profile_img = imagem
+        if background_img is not None:
+            utilizador.background_img = background_img
         utilizador.save()
         user.save()
         return redirect('fotos:profile')
