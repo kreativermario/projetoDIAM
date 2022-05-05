@@ -87,7 +87,13 @@ def galeria(request):
 
 
 def comunidade(request):
-    return render(request, 'fotos/comunidade.html')
+    utilizadores = Utilizador.objects.all()
+
+    context = {
+        'utilizadores': utilizadores
+    }
+
+    return render(request, 'fotos/comunidade.html', context)
 
 
 
