@@ -20,27 +20,44 @@
     {% endblock %}
 
 </head>
+{% block nav %}
 <header>
-      <nav class="navbar navbar-light navbar-expand-md fixed-top bg-light">
+    <nav class="navbar navbar-light navbar-expand-md fixed-top bg-light">
         <div class="containerNav">
             <div id="navbarResponsive">
                 <ul class="navbar-nav md-auto">
-                    <li class="nav-item nav-link"><img src="/static/images/logo/FStoppersLogo.png" width="175" height="37"></li>
-                    <li class="nav-item nav-link"><a class="nav-link active" href="/intro">Galeria</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link active" href="/profile">Perfil</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link active" href="/comunidade">Comunidade</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="login">Login</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="#Logout#">Logout</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="/Profile">#O Mário é GAY!#</a></li>
+                    <li class="nav-item nav-link">
+                        <a href="{% url 'fotos:inicio' %}" class="member-img">
+                            <img src="/static/images/logo/FStoppersLogo.png" width="175" height="37">
+                        </a>
+                    </li>
+                    <li class="nav-item nav-link"><a class="nav-link active" href="{% url 'fotos:galeria' %}">Galeria</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link active" href="{% url 'fotos:comunidade' %}">Comunidade</a></li>
+                    {% if user.is_authenticated is False %}
+                    <li class="nav-item nav-link"><a class="nav-link" href="{% url 'fotos:login' %}">Login</a></li>
+                    {% endif %}
+                    <div class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item nav-link ms-auto"><a class="nav-link" href="{% url 'fotos:processlogout' %}">Logout</a></li>
+                        <li class="nav-item nav-link ms-auto">
+                            <a href="{% url 'fotos:profile' request.user.id %}" class="member-img">
+                                <img src="{{ request.user.utilizador.image_url }}" class="img-rounded" alt="" width="50" height="50">
+                            </a>
+                            {% endif %}
+                        </li>
+                    </div>
                 </ul>
+
             </div>
         </div>
-      </nav>
+    </nav>
 </header>
+{% endblock %}
 
-
+{% block body %}
 <body style="margin-top: 150px; margin-bottom: 50px">
 {% block content %}
+{% endblock %}
 {% endblock %}
 </body>
 {% block footer %}

@@ -3,29 +3,18 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
-    <nav class="navbar navbar-light navbar-expand-md fixed-top" id="mainNav">
-        <div class="container"><a class="navbar-brand" href="#">Brand</a><button data-bs-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item nav-link"><a class="nav-link active" href="#about">About</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="#download">download</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="#contact">contact</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <section class="photo-gallery py-4 py-xl-5">
         <div class="container">
             <div class="row mb-5">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
                     <h2>Galeria</h2>
-                    <p class="w-lg-50">Curae hendrerit donec commodo hendrerit egestas tempus, turpis facilisis nostra nunc. Vestibulum dui eget ultrices.</p>
+                    <p class="w-lg-50">Fstoppers</p>
                 </div>
             </div>
             <div class="row gx-2 gy-2 row-cols-1 row-cols-md-2 row-cols-xl-3 photos" data-bss-baguettebox="">
                 {% for foto in fotos %}
-                <div class="col item"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
+                <div class="col item"><a href="{% url 'fotos:foto' foto.id %}">
                     <img class="img-fluid" src="{{foto.imagem.url}}"></a>
                 </div>
                 {% empty %}

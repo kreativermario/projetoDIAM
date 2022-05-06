@@ -35,6 +35,9 @@ def delete_profile_img(utilizador):
 
 ########################################################################
 
+def inicio(request):
+    return render(request, 'fotos/inicio.html')
+
 
 # Frontpage
 def index(request):
