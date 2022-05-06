@@ -32,26 +32,15 @@ class Foto(models.Model):
 class Comentario(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE, default="")
     texto = models.TextField()
-    votos = models.ManyToManyField(User, related_name='comentarios_votos')
     created_date = models.DateTimeField(auto_now_add=True)
     foto = models.ForeignKey(Foto, on_delete=models.CASCADE)
-
-    def number_of_votos(self):
-        return self.votos.count()
 
 
 
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_img = models.ImageField(upload_to='profile/', blank=True)
-    background_img = models.ImageField(upload_to='profile/background', blank=True)
     about = models.CharField(max_length=250, null=True, blank=True)
-
-    def background_url(self):
-        if self.background_img and hasattr(self.background_img, 'url'):
-            return self.background_img
-        else:
-            return '/static/images/profile/background/profile_background.jpg'
 
     def image_url(self):
         if self.profile_img and hasattr(self.profile_img, 'url'):

@@ -78,7 +78,7 @@ Galeria
                     </li>
                     <li class="list-group-item">
                         <a href="{% url 'fotos:profile' %}" class="btn btn-dark btn-sm m-1">
-                           Perfil</a>
+                            Perfil</a>
                         <a href="{% url 'fotos:processlogout' %}" class="btn btn-outline-dark btn-sm m-1">
                             Logout</a>
                     </li>
@@ -104,15 +104,20 @@ Galeria
                         <img class="image-thumbnail" src="{{foto.imagem.url}}" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title">
-                                {{foto.titulo}}<span class="badge rounded-pill bg-dark">{{foto.categoria.nome}}</span>
+                                {{foto.titulo}}<span class="badge rounded-pill bg-dark mx-2">{{foto.categoria.nome}}</span>
                             </h5>
                             <p><strong>Autor:</strong>
                                 <span class="badge rounded-pill bg-primary mx-1">{{foto.autor.username}}</span>
                             </p>
                             <p><strong>Data de upload:</strong> {{foto.created_date}}</p>
                             <p><strong>Likes:</strong> {{foto.number_of_likes}}</p>
-
-                            </span>
+                            <!--ELIMINAR FOTO-->
+                            {% if user.is_authenticated and user.is_superuser %}
+                            <a href="{% url 'fotos:eliminarFoto' foto.id %}" class="btn btn-danger"
+                               onclick="return confirm('Tem a certeza que quer eliminar?')">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </a>
+                            {% endif %}
                         </div>
 
                         <a href="{% url 'fotos:foto' foto.id %}" class="btn btn-outline-dark btn-sm m-1">Ver foto</a>

@@ -15,5 +15,6 @@ urlpatterns = [
     path('profile', views.profile, name='profile'),
     path('profile/edit', views.profile_edit, name='profile_edit'),
     path('foto/<str:pk>/comentario/', views.process_comentario, name='process_comentario'),
+    path('403', views.no_perms_page, name='no_perms_page'),
 
 ]

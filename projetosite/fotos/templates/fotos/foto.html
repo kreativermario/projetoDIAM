@@ -16,26 +16,41 @@ Foto
                 <div class="card-body">
                     <h3>{{foto.titulo}}</h3>
                     <p class="card-text">{{foto.descricao}}</p>
-                    <p>
-                        {% if user.is_authenticated and is_allowed %}
-                    <form action="{% url 'fotos:foto' foto.id %}" method="POST">
-                        {% csrf_token %}
-                        {% if foto_is_liked %}
-                        <button type="submit" name="dislike" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-down" style="color: white"></i></button>
-                        {% else %}
-                        <button type="submit" name="like" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-up" style="color: white"></i></button>
-                        {% endif %}
-                    </form>
-                    <!--ELIMINAR FOTO-->
-                    {% if user.is_authenticated and is_autor %}
-                    <a href="{% url 'fotos:eliminarFoto' foto.id %}" class="btn btn-primary"> <i class="fa fa-trash" aria-hidden="true"></i></a>
-                    {% endif %}
+                    <div class="btn-group" role="group">
+                        <div class="btn btn-secondary bg-dark mx-1">
+                            Likes
+                            <span class="badge bg-light text-dark">
+                                {{foto.number_of_likes}}
+                            </span>
+                        </div>
 
-                    <strong>{{foto.number_of_likes}}</strong>
-                    {% else %}
-                    <a class="btn btn-primary" href="{% url 'fotos:login' %}?next={{request.path}}">Faça login para dar like à foto!</a><br>
-                    {% endif %}
-                    </p>
+                        {% if user.is_authenticated and is_allowed %}
+                        <form action="{% url 'fotos:foto' foto.id %}" method="POST">
+                            {% csrf_token %}
+                            {% if foto_is_liked %}
+                            <button type="submit" name="dislike" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-down" style="color: white"></i></button>
+                            {% else %}
+                            <button type="submit" name="like" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-up" style="color: white"></i></button>
+                            {% endif %}
+
+                        </form>
+
+                        {% else %}
+                            {% if user.is_superuser %}
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'fotos:login' %}?next={{request.path}}">Faça login para dar like à foto!</a><br>
+                            {% endif %}
+                        {% endif %}
+
+                        <!--ELIMINAR FOTO-->
+                        {% if user.is_superuser or user.is_authenticated and is_autor %}
+                        <a href="{% url 'fotos:eliminarFoto' foto.id %}" class="btn btn-danger mx-1"
+                           onclick="return confirm('Tem a certeza que quer eliminar?')">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+
                 </div>
             </div>
             {% if user.is_authenticated and is_allowed %}
@@ -56,7 +71,7 @@ Foto
                 </form>
             </div>
             {% endif %}
-
+            <!-- COMENTÁRIOS-->
             <div class="container mt-5">
                 <div class="row d-flex justify-content-center">
                     <div class="col-md-8">
@@ -79,27 +94,12 @@ Foto
                             </div>
                             <div class="action d-flex justify-content-between mt-2 align-items-center">
                                 <div class="reply px-4">
-                                    {% if request.user == comentario.autor %}
-                                    <form method="POST" action="{% url 'fotos:process_comentario' comentario.id %}">
-                                        {% csrf_token %}
-
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fa fa-trash" aria-hidden="true"></i>
-                                        </button>
-                                    </form>
-                                    {% endif %}
-                                </div>
-                                <div class="reply px-4">
-                                    {% if user.is_authenticated and is_allowed %}
-                                    <form action="{% url 'fotos:process_comentario' comentario.id %}" method="POST">
-                                        {% csrf_token %}
-                                        {% if comentario.is_downvote %}
-                                        <button type="submit" name="downvote" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-down" style="color: white"></i></button>
-                                        {% else %}
-                                        <button type="submit" name="upvote" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-up" style="color: white"></i></button>
-                                        {% endif %}
-                                    </form>
-                                    <strong>{{comentario.number_of_likes}}</strong>
+                                    {% if request.user == comentario.autor or request.user.is_superuser%}
+                                    <a href="{% url 'fotos:process_comentario' comentario.id %}"
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Tem a certeza que quer eliminar?')">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </a>
                                     {% endif %}
 
                                 </div>
@@ -111,6 +111,7 @@ Foto
                 </div>
             </div>
         </div>
+        <!-- SIDEBAR-->
         <div class="col-md-3">
             <div class="card" style="width: 18rem;">
                 <div class="card-header">

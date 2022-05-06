@@ -13,12 +13,24 @@ from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
+DEFAULT_PROFILE_URL = '/static/images/profile/default.jpg'
+
 # Create your views here.
+
+# View 403
+def no_perms_page(request):
+    return render(request, 'fotos/no_perms.html')
 
 
 # Ver se tem permissões!
 def is_member(user):
     return user.groups.filter(name='utilizadores').exists()
+
+
+# Função para remover a foto de perfil anterior, não remove a default
+def delete_profile_img(utilizador):
+    if utilizador.image_url != DEFAULT_PROFILE_URL:
+        utilizador.profile_img.delete()
 
 
 # Frontpage
@@ -86,6 +98,7 @@ def galeria(request):
     return render(request, 'fotos/galeria.html', context)
 
 
+# Lista de utilizadores
 def comunidade(request):
     utilizadores = Utilizador.objects.all()
 
@@ -96,7 +109,7 @@ def comunidade(request):
     return render(request, 'fotos/comunidade.html', context)
 
 
-
+# View que elimina comentário
 def process_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
@@ -106,47 +119,47 @@ def process_comentario(request, pk):
     return redirect('fotos:foto', foto_id)
 
 
+# View que elimina a foto
 def removerFoto(request, pk):
-    foto = Foto.objects.get(id=pk)
-    if foto.autor == request.user:
+    foto = get_object_or_404(Foto, pk=pk)
+    if foto.autor == request.user or request.user.is_superuser:
+        foto.imagem.delete()
         foto.delete()
         return redirect('fotos:galeria')
-    # Fazer 'refresh' para a página anterior que era esta
+    # Fazer 'refresh' para a página anterior
     return redirect(request.META['HTTP_REFERER'])
 
 
+# Detalhe da foto
 def verFoto(request, pk):
     foto = get_object_or_404(Foto, pk=pk)
     comentarios = Comentario.objects.filter(foto_id=pk).order_by('-created_date')
     likes = foto.number_of_likes()
     is_allowed = is_member(request.user)
     is_autor = False
-    if foto.autor == request.user:
-        is_autor = True
     liked = False
 
+    # Verifica se o user é o autor da foto
+    if foto.autor == request.user:
+        is_autor = True
+
+    # Se o user já deu like
     if foto.likes.filter(id=request.user.id).exists():
         liked = True
 
-    # Likes e Dislikes
+    # Se houver um like ou dislike
     if request.method == 'POST':
-        if request.POST.get('like') is not None:
-            if foto.likes.filter(id=request.user.id).exists():
-                liked = True
-                context = {
-                    'foto': foto,
-                    'likes': likes,
-                    'foto_is_liked': liked,
-                    'is_allowed': is_allowed,
-                    'comentarios': comentarios,
-                    'is_autor': is_autor,
-                }
-            else:
-                foto.likes.add(request.user)
-        if request.POST.get('dislike') is not None:
-            if foto.likes.filter(id=request.user.id).exists():
-                foto.likes.remove(request.user)
-        # Comentário
+
+        # Dar like só se ainda não deu like
+        if request.POST.get('like') is not None and liked is False:
+            foto.likes.add(request.user)
+
+        # Dar Dislike se já deu like
+        if request.POST.get('dislike') is not None and liked is True:
+            foto.likes.remove(request.user)
+
+        # Submit de um comentário, este está protegido pois os
+        # botões para submit não são mostrados para utilizadores sem permissão
         if request.POST.get('texto') is not None:
             texto = request.POST.get('texto')
             comentario = Comentario(
@@ -172,7 +185,7 @@ def verFoto(request, pk):
 
 
 @login_required(login_url=reverse_lazy('fotos:login'))
-@user_passes_test(is_member, login_url=reverse_lazy('fotos:login'))
+@user_passes_test(is_member, login_url=reverse_lazy('fotos:no_perms_page'))
 def criarFoto(request):
     categorias = Categoria.objects.all()
 
@@ -181,8 +194,10 @@ def criarFoto(request):
         imagem = request.FILES.get('imagem')
         titulo = data['titulo']
         descricao = data['descricao']
+        # Se for selecionado uma categoria existente
         if data['categoria'] != "none":
             categoria = Categoria.objects.get(id=data['categoria'])
+        # Se for criado uma nova categoria, é utilizada essa
         elif data['novaCategoria'] != '':
             # Cria uma categoria se já não existir.
             # Se já existir, faz um get e coloca na variavel categoria
@@ -209,6 +224,7 @@ def criarFoto(request):
 def registar(request):
     template = 'fotos/registar.html'
 
+    # Se alguém se registar
     if request.method == 'POST':
 
         form = RegisterForm(request.POST)
@@ -244,8 +260,9 @@ def registar(request):
                 # Login
                 login(request, user)
 
-                return redirect('fotos:galeria')
+                return redirect('fotos:perfil')
 
+    # Processar o template
     else:
         form = RegisterForm()
 
@@ -258,11 +275,11 @@ def user_login(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
+        # Se estiver válido
         if user is not None:
-
             login(request, user)
             return redirect('fotos:galeria')
-
+        # Inválido
         else:
             return render(request, 'fotos/login.html', {'error_message': 'Username e/ou password incorretos!'})
 
@@ -299,13 +316,12 @@ def profile_edit(request):
     if request.method == 'POST':
         data = request.POST
         user = request.user
-        utilizador = Utilizador.objects.get(user_id=request.user.id)
+        utilizador = get_object_or_404(Utilizador, user_id=request.user.id)
         imagem = request.FILES.get('profile_img')
-        background_img = request.FILES.get('background_img')
         primeiro_nome= data['primeiro_nome']
         ultimo_nome = data['ultimo_nome']
         about = data['sobre_mim']
-        print(request.POST)
+
         if primeiro_nome != "":
             user.first_name = primeiro_nome
         if ultimo_nome != "":
@@ -313,11 +329,8 @@ def profile_edit(request):
         if about != "":
             utilizador.about = about
         if imagem is not None:
-            if utilizador.image_url != '/static/images/profile/default.jpg':
-                utilizador.profile_img.delete()
+            delete_profile_img(utilizador)
             utilizador.profile_img = imagem
-        if background_img is not None:
-            utilizador.background_img = background_img
         utilizador.save()
         user.save()
         return redirect('fotos:profile')
