@@ -15,7 +15,6 @@ from django.contrib.auth.decorators import user_passes_test
 
 DEFAULT_PROFILE_URL = '/static/images/profile/default.jpg'
 
-# Create your views here.
 
 # View 403
 def no_perms_page(request):
