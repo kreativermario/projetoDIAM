@@ -6,44 +6,50 @@
 <body class="m-5">
 <div class="container">
     <div class="row bootstrap snippets bootdeys">
-        <div class="col-md-9 col-sm-7">
+        <div class="col-md-0 col-sm-0">
             <h2>Comunidade</h2>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <form action="{% url 'fotos:comunidade' %}" method="get">
+                        <div class="input-group">
+                            <input name="q" type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </form>
+                </li>
+            </ul>
         </div>
-        <div class="col-md-3 col-sm-5">
-            <form method="get" role="form" class="search-form-full">
-                <div class="form-group">
-                    <input type="text" class="form-control" name="s" id="search-input" placeholder="Search...">
-                    <i class="entypo-search"></i>
-                </div>
-            </form>
-        </div>
-    </div>
-    {% for utilizador in utilizadores %}
-    <div class="member-entry">
-        <a href="#" class="member-img">
-            <img src="{{ utilizador.image_url }}" class="img-rounded">
-            <i class="fa fa-forward"></i>
-        </a>
-        <div class="member-details">
-            <h4> <a href="#">{{ utilizador.user.username }}</a> </h4>
-            <div class="row info-list">
-                <div class="col-sm-4">
-                    <i class="fa fa-user-astronaut"></i>
-                    <a href="#">{{ utilizador.user.first_name }}</a>
-                </div>
-                <div class="clear"></div>
-                <div class="col-sm-4">
-                    <i class="fa fa-user-astronaut"></i>
-                    <a href="#">{{ utilizador.user.last_name }}</a>
-                </div>
-                <div class="col-sm-4">
-                    <i class="fa fa-envelope"></i>
-                    <a href="#">{{ utilizador.user.email }}</a>
+        {% for utilizador in utilizadores %}
+        <div class="member-entry">
+            <a href="{% url 'fotos:profile' utilizador.user_id %}" class="member-img">
+                <img src="{{ utilizador.image_url }}" class="img-rounded">
+                <i class="fa fa-forward"></i>
+            </a>
+            <div class="member-details">
+                <h4> <a style="font-size: 28px" href="{% url 'fotos:profile' utilizador.user_id %}">{{ utilizador.user.username }} </a> </h4>
+                <div class="row info-list">
+                    <div class="col-sm-4">
+                        <i class="fa fa-user"></i>
+                        <a style="font-size: 18px" itemref=" ">{{ utilizador.user.first_name }} {{ utilizador.user.last_name }}</a>
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-4">
+                        <i class="fa fa-envelope"></i>
+                        <a style="font-size: 18px" href=" ">{{ utilizador.user.email }}</a>
+                    </div>
+                    <div class="col-sm-4">
+                        <i class="fa fa-history"><p class="text-muted fs-13px">{{utilizador.user.last_login}}</p></i>
+
+                    </div>
+                    <div class="clear"></div>
+
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 </body>
 {% endblock %}

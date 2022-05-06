@@ -3,6 +3,7 @@
 {% block title %}
 Perfil
 {% endblock %}
+
 {% block content %}
 
 <section class="h-100 gradient-custom-2">
@@ -322,25 +323,37 @@ Perfil
                  height:200px; object-fit: cover;">
 
               <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
-                <img src="{{ request.user.utilizador.image_url }}"
+                <img src="{{ utilizador.image_url }}"
                      alt="Profile Image" class="img-fluid img-thumbnail mt-4 mb-2"
                      style="width: 150px; z-index: 1">
 
               </div>
 
               <div class="ms-3" style="margin-top: 130px;">
-                <h5>{{request.user.first_name}} {{request.user.last_name}}</h5>
-                <p>{{request.user.email}}</p>
+                <h5>{{user.first_name}} {{user.last_name}}</h5>
+                <p>{{user.email}}</p>
               </div>
             </div>
             <div class="p-4 text-black" style="background-color: #f8f9fa;">
+              {% if request.user.is_authenticated and request.user.id == user.id %}
+
               <div class="d-flex justify-content-start text-center py-1">
                 <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
-                        style="z-index: 1;" onclick="location.href='{% url 'fotos:profile_edit' %}'">
+                        style="z-index: 1;" onclick="location.href='{% url 'fotos:profile_edit' user.id %}'">
                   Editar perfil
                 </button>
               </div>
+              {% endif %}
+
               <div class="d-flex justify-content-end text-center py-1">
+                <div>
+                  <p class="mb-1 h5 me-2">{{utilizador.number_of_followers}}</p>
+                  <p class="small text-muted mb-0 me-2">Followers</p>
+                </div>
+                <div>
+                  <p class="mb-1 h5 me-2">{{utilizador.number_of_following}}</p>
+                  <p class="small text-muted mb-0 me-2">Following</p>
+                </div>
                 <div>
                   <p class="mb-1 h5">{{autor_count}}</p>
                   <p class="small text-muted mb-0">Fotos</p>
@@ -348,6 +361,23 @@ Perfil
                 <div class="px-3">
                   <p class="mb-1 h5">{{likes_count}}</p>
                   <p class="small text-muted mb-0">Likes</p>
+                </div>
+                <div class="px-3">
+                  {% if user.is_authenticated and request.user.id != user.id%}
+                  <form action="{% url 'fotos:profile' utilizador.user_id %}" method="POST">
+                    {% csrf_token %}
+                    {% if is_following is True %}
+                    <button type="submit" name="unfollow" class="btn btn-primary">
+                      Unfollow
+                    </button>
+                    {% else %}
+                    <button type="submit" name="follow" class="btn btn-primary">
+                      Follow
+                    </button>
+                    {% endif %}
+
+                  </form>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -357,12 +387,38 @@ Perfil
                 <p class="lead fw-normal mb-1">Sobre mim</p>
 
                 <div class="p-4" style="background-color: #f8f9fa;">
-                  {% if request.user.utilizador.about %}
-                  <p class="font-italic mb-1">{{request.user.utilizador.about}}</p>
+                  {% if utilizador.about %}
+                  <p class="font-italic mb-1">{{utilizador.about}}</p>
                   {% else %}
                   <p class="font-italic mb-1">Ainda não tem uma descrição...</p>
                   {% endif %}
                 </div>
+
+              </div>
+
+
+              {% if following_list.all %}
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <p class="lead fw-normal mb-0">Following</p>
+              </div>
+              {% endif %}
+              <div class="row">
+
+                {% for following in following_list %}
+                <div class="list-group-item d-flex align-items-center justify-content-between">
+                  <img src="{{following.utilizador.image_url}}" alt="" width="50px" class="rounded-sm ml-n2 me-2" />
+                  <div class="flex-fill pl-3 pr-3">
+                    <div><a href="{% url 'fotos:profile' following.id %}" class="text-dark font-weight-600">
+                      {{following.first_name}} {{following.last_name}}</a>
+                    </div>
+                    <div class="text-muted fs-13px">Followers:
+                      <span class="badge bg-secondary">{{following.utilizador.number_of_followers}}</span>
+                    </div>
+                  </div>
+                  <div class="text-muted fs-13px">Email: {{following.email}}
+                    </div>
+                </div>
+                {% endfor %}
 
               </div>
 
@@ -385,6 +441,7 @@ Perfil
 
               </div>
             </div>
+
           </div>
         </div>
       </div>

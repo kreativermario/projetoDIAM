@@ -322,8 +322,8 @@ Perfil
                                      style="width: 150px; z-index: 1">
                             </div>
                             <div class="ms-3" style="margin-top: 130px;">
-                                <h5>{{request.user.first_name}} {{request.user.last_name}}</h5>
-                                <p>{{request.user.email}}</p>
+                                <h5>{{user.first_name}} {{user.last_name}}</h5>
+                                <p>{{user.email}}</p>
                             </div>
                         </div>
                         <div class="p-4 text-black" style="background-color: #f8f9fa;">
@@ -335,7 +335,7 @@ Perfil
                                     <p class="lead fw-normal mb-1">Editar os meus dados</p>
 
                                     <div class="p-4" style="background-color: #f8f9fa;">
-                                        <form method="POST" action="{% url 'fotos:profile_edit' %}" enctype="multipart/form-data">
+                                        <form method="POST" action="{% url 'fotos:profile_edit' user.id %}" enctype="multipart/form-data">
                                             {% csrf_token %}
                                             <div class="row mb-4">
                                                 <div class="col">
@@ -361,7 +361,6 @@ Perfil
                                                 <label for="profile_img" class="mb-2">Foto de perfil</label>
                                                 <div class="input-group input-group-sm mb-3">
                                                     <input type="file" class="form-control" id="profile_img" name="profile_img">
-                                                    <label class="input-group-text" for="profile_img">Upload</label>
                                                 </div>
                                             </div>
 

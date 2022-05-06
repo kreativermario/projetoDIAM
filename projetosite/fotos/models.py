@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
 class Categoria(models.Model):
     nome = models.CharField(max_length=100, null=False, blank=False)
 
@@ -36,17 +37,24 @@ class Comentario(models.Model):
     foto = models.ForeignKey(Foto, on_delete=models.CASCADE)
 
 
-
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_img = models.ImageField(upload_to='profile/', blank=True)
     about = models.CharField(max_length=250, null=True, blank=True)
+    followers = models.ManyToManyField(User, related_name='utilizador_followers')
+    following = models.ManyToManyField(User, related_name='utilizador_following')
 
     def image_url(self):
         if self.profile_img and hasattr(self.profile_img, 'url'):
             return self.profile_img.url
         else:
             return '/static/images/profile/default.jpg'
+
+    def number_of_followers(self):
+        return self.followers.count()
+
+    def number_of_following(self):
+        return self.following.count()
 
     class Meta:
         permissions = [
