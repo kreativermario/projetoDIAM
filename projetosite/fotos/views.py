@@ -8,12 +8,13 @@ from .models import Categoria, Foto, Utilizador, Comentario
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
 DEFAULT_PROFILE_URL = '/static/images/profile/default.jpg'
+
 
 # Create your views here.
 
@@ -42,11 +43,10 @@ def index(request):
         # Aplicar filtro
         fotos = Foto.objects.filter(categoria__nome__contains=categoria)
 
-
     categorias = Categoria.objects.all()
     context = {
         'categorias': categorias,
-        'fotos' : fotos
+        'fotos': fotos
     }
 
     return render(request, 'fotos/index.html', context)
@@ -100,10 +100,17 @@ def galeria(request):
 
 # Lista de utilizadores
 def comunidade(request):
-    utilizadores = Utilizador.objects.all()
+    # Filtro de pesquisa
+    pesquisa = request.GET.get('q')
+
+    if pesquisa is None:
+        utilizadores = Utilizador.objects.all()
+    # Filtro por pesquisa
+    else:
+        utilizadores = Utilizador.objects.filter(user__username__contains=pesquisa)
 
     context = {
-        'utilizadores': utilizadores
+        'utilizadores': utilizadores,
     }
 
     return render(request, 'fotos/comunidade.html', context)
@@ -206,11 +213,11 @@ def criarFoto(request):
             categoria = None
 
         foto = Foto.objects.create(
-            categoria = categoria,
-            titulo = titulo,
-            descricao = descricao,
-            imagem = imagem,
-            autor = request.user
+            categoria=categoria,
+            titulo=titulo,
+            descricao=descricao,
+            imagem=imagem,
+            autor=request.user
         )
 
         return redirect('fotos:galeria')
@@ -312,13 +319,12 @@ def profile(request):
 
 @login_required(login_url=reverse_lazy('fotos:login'))
 def profile_edit(request):
-
     if request.method == 'POST':
         data = request.POST
         user = request.user
         utilizador = get_object_or_404(Utilizador, user_id=request.user.id)
         imagem = request.FILES.get('profile_img')
-        primeiro_nome= data['primeiro_nome']
+        primeiro_nome = data['primeiro_nome']
         ultimo_nome = data['ultimo_nome']
         about = data['sobre_mim']
 
@@ -336,3 +342,14 @@ def profile_edit(request):
         return redirect('fotos:profile')
 
     return render(request, 'fotos/profile_edit.html')
+
+
+def profileview(request, pk):
+    utilizador = get_object_or_404(Utilizador, pk=pk)
+    users = Utilizador.objects.filter(user_id=pk)
+
+    context = {
+        'utilizador': utilizador,
+    }
+
+    return render(request, 'fotos/profileview.html', context)

@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
 class Categoria(models.Model):
     nome = models.CharField(max_length=100, null=False, blank=False)
 
@@ -34,7 +35,6 @@ class Comentario(models.Model):
     texto = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True)
     foto = models.ForeignKey(Foto, on_delete=models.CASCADE)
-
 
 
 class Utilizador(models.Model):
