@@ -313,6 +313,8 @@ def profile_edit(request):
         if about != "":
             utilizador.about = about
         if imagem is not None:
+            if utilizador.image_url != '/static/images/profile/default.jpg':
+                utilizador.profile_img.delete()
             utilizador.profile_img = imagem
         if background_img is not None:
             utilizador.background_img = background_img
