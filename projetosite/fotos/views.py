@@ -115,6 +115,7 @@ def process_comentario(request, pk):
 def removerFoto(request, pk):
     foto = get_object_or_404(Foto, pk=pk)
     if foto.autor == request.user or request.user.is_superuser:
+        foto.imagem.delete()
         foto.delete()
         return redirect('fotos:galeria')
     # Fazer 'refresh' para a página anterior que era esta
