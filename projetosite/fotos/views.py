@@ -1,5 +1,5 @@
 import os
-
+from django.db.models import Q
 import django.urls
 from django.views import View
 from django.urls import reverse_lazy, reverse
@@ -12,9 +12,6 @@ from django.http import HttpResponseRedirect
 from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
-from django import template
-
-register = template.Library()
 
 # Create your views here.
 
@@ -79,7 +76,7 @@ def galeria(request):
 
     # Filtro por pesquisa
     if pesquisa is not None:
-        fotos = Foto.objects.filter(titulo__icontains=pesquisa)
+        fotos = Foto.objects.filter(Q(titulo__icontains=pesquisa) | Q(autor__username__icontains=pesquisa))
 
     context = {
         'categorias': categorias,
@@ -89,27 +86,45 @@ def galeria(request):
     return render(request, 'fotos/galeria.html', context)
 
 
+def comunidade(request):
+    utilizadores = Utilizador.objects.all()
+
+    context = {
+        'utilizadores': utilizadores
+    }
+
+    return render(request, 'fotos/comunidade.html', context)
+
+
+
 def process_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
-    if request.POST.get('downvote') is not None:
-        if comentario.votos.filter(id=request.user.id).exists():
-            request.session['comentario_is_downvote'] = "true"
-        else:
-            comentario.votos.add(request.user)
-
-
     if comentario.autor == request.user:
         comentario.delete()
+
     return redirect('fotos:foto', foto_id)
 
 
-def verFoto(request, pk):
+def removerFoto(request, pk):
     foto = Foto.objects.get(id=pk)
+    if foto.autor == request.user:
+        foto.delete()
+        return redirect('fotos:galeria')
+    # Fazer 'refresh' para a página anterior que era esta
+    return redirect(request.META['HTTP_REFERER'])
+
+
+def verFoto(request, pk):
+    foto = get_object_or_404(Foto, pk=pk)
     comentarios = Comentario.objects.filter(foto_id=pk).order_by('-created_date')
     likes = foto.number_of_likes()
     is_allowed = is_member(request.user)
+    is_autor = False
+    if foto.autor == request.user:
+        is_autor = True
     liked = False
+
     if foto.likes.filter(id=request.user.id).exists():
         liked = True
 
@@ -123,7 +138,8 @@ def verFoto(request, pk):
                     'likes': likes,
                     'foto_is_liked': liked,
                     'is_allowed': is_allowed,
-                    'comentarios': comentarios
+                    'comentarios': comentarios,
+                    'is_autor': is_autor,
                 }
             else:
                 foto.likes.add(request.user)
@@ -148,7 +164,8 @@ def verFoto(request, pk):
         'likes': likes,
         'foto_is_liked': liked,
         'is_allowed': is_allowed,
-        'comentarios': comentarios
+        'comentarios': comentarios,
+        'is_autor': is_autor,
     }
 
     return render(request, 'fotos/foto.html', context)

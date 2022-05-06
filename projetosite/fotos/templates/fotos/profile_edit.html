@@ -333,6 +333,7 @@ Perfil
 
                                 <div class="mb-3 mt-2">
                                     <p class="lead fw-normal mb-1">Editar os meus dados</p>
+
                                     <div class="p-4" style="background-color: #f8f9fa;">
                                         <form method="POST" action="{% url 'fotos:profile_edit' %}" enctype="multipart/form-data">
                                             {% csrf_token %}

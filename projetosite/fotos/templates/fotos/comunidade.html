@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %} Comunidade {% endblock %}
+
+{% block content %}
+<body class="m-5">
+<div class="container">
+    <div class="row bootstrap snippets bootdeys">
+        <div class="col-md-9 col-sm-7">
+            <h2>Comunidade</h2>
+        </div>
+        <div class="col-md-3 col-sm-5">
+            <form method="get" role="form" class="search-form-full">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="s" id="search-input" placeholder="Search...">
+                    <i class="entypo-search"></i>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% for utilizador in utilizadores %}
+    <div class="member-entry">
+        <a href="#" class="member-img">
+            <img src="{{ utilizador.image_url }}" class="img-rounded">
+            <i class="fa fa-forward"></i>
+        </a>
+        <div class="member-details">
+            <h4> <a href="#">{{ utilizador.user.username }}</a> </h4>
+            <div class="row info-list">
+                <div class="col-sm-4">
+                    <i class="fa fa-user-astronaut"></i>
+                    <a href="#">{{ utilizador.user.first_name }}</a>
+                </div>
+                <div class="clear"></div>
+                <div class="col-sm-4">
+                    <i class="fa fa-user-astronaut"></i>
+                    <a href="#">{{ utilizador.user.last_name }}</a>
+                </div>
+                <div class="col-sm-4">
+                    <i class="fa fa-envelope"></i>
+                    <a href="#">{{ utilizador.user.email }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</body>
+{% endblock %}
