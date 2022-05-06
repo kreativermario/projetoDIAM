@@ -32,12 +32,8 @@ class Foto(models.Model):
 class Comentario(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE, default="")
     texto = models.TextField()
-    votos = models.ManyToManyField(User, related_name='comentarios_votos')
     created_date = models.DateTimeField(auto_now_add=True)
     foto = models.ForeignKey(Foto, on_delete=models.CASCADE)
-
-    def number_of_votos(self):
-        return self.votos.count()
 
 
 

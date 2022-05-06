@@ -14,6 +14,8 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
 # Create your views here.
+def no_perms_page(request):
+    return render(request, 'fotos/no_perms.html')
 
 
 # Ver se tem permissões!
@@ -101,7 +103,6 @@ def comunidade(request):
     return render(request, 'fotos/comunidade.html', context)
 
 
-
 def process_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
@@ -113,7 +114,7 @@ def process_comentario(request, pk):
 
 def removerFoto(request, pk):
     foto = get_object_or_404(Foto, pk=pk)
-    if foto.autor == request.user:
+    if foto.autor == request.user or request.user.is_superuser:
         foto.delete()
         return redirect('fotos:galeria')
     # Fazer 'refresh' para a página anterior que era esta
@@ -177,7 +178,7 @@ def verFoto(request, pk):
 
 
 @login_required(login_url=reverse_lazy('fotos:login'))
-@user_passes_test(is_member, login_url=reverse_lazy('fotos:login'))
+@user_passes_test(is_member, login_url=reverse_lazy('fotos:no_perms_page'))
 def criarFoto(request):
     categorias = Categoria.objects.all()
 
