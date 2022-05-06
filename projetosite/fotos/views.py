@@ -21,6 +21,11 @@ def is_member(user):
     return user.groups.filter(name='utilizadores').exists()
 
 
+def delete_profile_img(utilizador):
+    if utilizador.image_url != '/static/images/profile/default.jpg':
+        utilizador.profile_img.delete()
+
+
 # Frontpage
 def index(request):
     categoria = request.GET.get('categoria')
@@ -107,7 +112,7 @@ def process_comentario(request, pk):
 
 
 def removerFoto(request, pk):
-    foto = Foto.objects.get(id=pk)
+    foto = get_object_or_404(Foto, pk=pk)
     if foto.autor == request.user:
         foto.delete()
         return redirect('fotos:galeria')
@@ -313,11 +318,8 @@ def profile_edit(request):
         if about != "":
             utilizador.about = about
         if imagem is not None:
-            if utilizador.image_url != '/static/images/profile/default.jpg':
-                utilizador.profile_img.delete()
+            delete_profile_img(utilizador)
             utilizador.profile_img = imagem
-        if background_img is not None:
-            utilizador.background_img = background_img
         utilizador.save()
         user.save()
         return redirect('fotos:profile')
