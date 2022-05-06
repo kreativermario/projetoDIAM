@@ -41,13 +41,34 @@
                     </div>
                     <div class="col-sm-4">
                         <i class="fa fa-history"><p class="text-muted fs-13px">{{utilizador.user.last_login}}</p></i>
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-4">
+                        {% if request.user.is_authenticated and request.user.id != utilizador.user.id%}
+                        <form action="{% url 'fotos:profile' utilizador.user_id %}" method="POST">
+                            {% csrf_token %}
+                            {% load custom_tags %}
+                            {% is_following request.user.id utilizador.user_id as validation %}
+                            {% if validation %}
+                            <button type="submit" name="unfollow" class="btn btn-primary">
+                                Unfollow
+                            </button>
+                            {% else %}
+                            <button type="submit" name="follow" class="btn btn-primary">
+                                Follow
+                            </button>
+                            {% endif %}
 
+                        </form>
+                        {% endif %}
                     </div>
                     <div class="clear"></div>
+
 
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
-{% endblock %}
+    {% endblock %}

@@ -13,6 +13,7 @@ from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
+
 DEFAULT_PROFILE_URL = '/static/images/profile/default.jpg'
 
 
@@ -32,6 +33,10 @@ def is_member(user):
 def delete_profile_img(utilizador):
     if utilizador.image_url != DEFAULT_PROFILE_URL:
         utilizador.profile_img.delete()
+
+
+
+
 
 ########################################################################
 
@@ -331,6 +336,8 @@ def profile(request, pk):
             utilizador_own.following.remove(user)
 
         utilizador.save()
+
+        return redirect(request.META['HTTP_REFERER'])
 
     for foto in fotos:
         likes_count += foto.likes.filter(id=user.id).count()
