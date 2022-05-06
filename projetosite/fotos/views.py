@@ -107,7 +107,7 @@ def comunidade(request):
         utilizadores = Utilizador.objects.all()
     # Filtro por pesquisa
     else:
-        utilizadores = Utilizador.objects.filter(user__username__contains=pesquisa)
+        utilizadores = Utilizador.objects.filter(user__username__icontains=pesquisa)
 
     context = {
         'utilizadores': utilizadores,
@@ -120,7 +120,7 @@ def comunidade(request):
 def process_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
-    if comentario.autor == request.user:
+    if comentario.autor == request.user or request.user.is_superuser:
         comentario.delete()
 
     return redirect('fotos:foto', foto_id)
@@ -300,56 +300,59 @@ def process_logout(request):
     return redirect('fotos:login')
 
 
-@login_required(login_url=reverse_lazy('fotos:login'))
-def profile(request):
+def profile(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    utilizador = get_object_or_404(Utilizador, user_id=user.id)
     likes_count = 0
     fotos = Foto.objects.all()
-    fotos_autor = fotos.filter(autor=request.user.id)
+    fotos_autor = fotos.filter(autor=user.id)
     autor_count = fotos_autor.count()
     for foto in fotos:
-        likes_count += foto.likes.filter(id=request.user.id).count()
+        likes_count += foto.likes.filter(id=user.id).count()
 
     context = {
+        'utilizador': utilizador,
+        'user': user,
         "fotos": fotos_autor,
-        "likes_count": likes_count,
-        "autor_count": autor_count
+        'likes_count': likes_count,
+        'autor_count': autor_count,
     }
+
     return render(request, 'fotos/profile.html', context)
 
 
 @login_required(login_url=reverse_lazy('fotos:login'))
-def profile_edit(request):
+def profile_edit(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    utilizador = get_object_or_404(Utilizador, user_id=pk)
+
     if request.method == 'POST':
         data = request.POST
         user = request.user
-        utilizador = get_object_or_404(Utilizador, user_id=request.user.id)
-        imagem = request.FILES.get('profile_img')
-        primeiro_nome = data['primeiro_nome']
-        ultimo_nome = data['ultimo_nome']
-        about = data['sobre_mim']
+        if request.user == utilizador.user:
+            imagem = request.FILES.get('profile_img')
+            primeiro_nome = data['primeiro_nome']
+            ultimo_nome = data['ultimo_nome']
+            about = data['sobre_mim']
 
-        if primeiro_nome != "":
-            user.first_name = primeiro_nome
-        if ultimo_nome != "":
-            user.last_name = ultimo_nome
-        if about != "":
-            utilizador.about = about
-        if imagem is not None:
-            delete_profile_img(utilizador)
-            utilizador.profile_img = imagem
-        utilizador.save()
-        user.save()
-        return redirect('fotos:profile')
-
-    return render(request, 'fotos/profile_edit.html')
-
-
-def profileview(request, pk):
-    utilizador = get_object_or_404(Utilizador, pk=pk)
-    users = Utilizador.objects.filter(user_id=pk)
+            if primeiro_nome != "":
+                user.first_name = primeiro_nome
+            if ultimo_nome != "":
+                user.last_name = ultimo_nome
+            if about != "":
+                utilizador.about = about
+            if imagem is not None:
+                delete_profile_img(utilizador)
+                utilizador.profile_img = imagem
+            utilizador.save()
+            user.save()
+            return redirect('fotos:profile', user.id)
 
     context = {
         'utilizador': utilizador,
+        'user': user,
     }
 
-    return render(request, 'fotos/profileview.html', context)
+    return render(request, 'fotos/profile_edit.html', context)
+
+

@@ -17,7 +17,24 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/galeria.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/perfil.css' %}">
     {% endblock %}
+
 </head>
+<header>
+    <nav class="navbar navbar-light navbar-expand-md mt-2" id="mainNav" xmlns="http://www.w3.org/1999/html">
+        <div class="container"><a class="navbar-brand" href="#">Brand</a><button data-bs-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item nav-link"><a class="nav-link active" href="{% url 'fotos:galeria' %}">Gallery</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="{% url 'fotos:comunidade' %}">Members Page</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="#contact">contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+
+
 {% block content %}
 {% endblock %}
 {% block footer %}

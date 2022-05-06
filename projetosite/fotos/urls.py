@@ -12,10 +12,9 @@ urlpatterns = [
     path('registar', views.registar, name='registar'),
     path('login', views.user_login, name='login'),
     path('logout', views.process_logout, name='processlogout'),
-    path('profile', views.profile, name='profile'),
-    path('profile/edit', views.profile_edit, name='profile_edit'),
+    path('profile/<str:pk>', views.profile, name='profile'),
+    path('profile/<str:pk>/edit', views.profile_edit, name='profile_edit'),
     path('foto/<str:pk>/comentario/', views.process_comentario, name='process_comentario'),
     path('403', views.no_perms_page, name='no_perms_page'),
-    path('profile/<str:pk>/profileview', views.profileview, name='profileview'),
 
 ]
