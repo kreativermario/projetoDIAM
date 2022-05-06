@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import user_passes_test
 DEFAULT_PROFILE_URL = '/static/images/profile/default.jpg'
 
 
-# Create your views here.
+##################         FUNCOES        ##############################
 
 # View 403
 def no_perms_page(request):
@@ -32,6 +32,8 @@ def is_member(user):
 def delete_profile_img(utilizador):
     if utilizador.image_url != DEFAULT_PROFILE_URL:
         utilizador.profile_img.delete()
+
+########################################################################
 
 
 # Frontpage
@@ -307,6 +309,26 @@ def profile(request, pk):
     fotos = Foto.objects.all()
     fotos_autor = fotos.filter(autor=user.id)
     autor_count = fotos_autor.count()
+    is_following = False
+    if request.user.is_authenticated:
+        utilizador_own = get_object_or_404(Utilizador, user_id=request.user.id)
+    if utilizador.followers.filter(id=request.user.id).exists():
+        is_following = True
+
+    following_list = utilizador.following.all()
+
+    if request.method == 'POST':
+        data = request.POST
+
+        if request.POST.get('follow') is not None and is_following is False:
+            utilizador.followers.add(request.user)
+            utilizador_own.following.add(user)
+        if request.POST.get('unfollow') is not None and is_following is True:
+            utilizador.followers.remove(request.user)
+            utilizador_own.following.remove(user)
+
+        utilizador.save()
+
     for foto in fotos:
         likes_count += foto.likes.filter(id=user.id).count()
 
@@ -316,6 +338,8 @@ def profile(request, pk):
         "fotos": fotos_autor,
         'likes_count': likes_count,
         'autor_count': autor_count,
+        'is_following': is_following,
+        'following_list': following_list,
     }
 
     return render(request, 'fotos/profile.html', context)
