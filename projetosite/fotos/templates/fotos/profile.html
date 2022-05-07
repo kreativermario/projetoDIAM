@@ -335,13 +335,28 @@ Perfil
               </div>
             </div>
             <div class="p-4 text-black" style="background-color: #f8f9fa;">
-              {% if request.user.is_authenticated and request.user.id == user.id %}
+              {% if request.user.is_authenticated and request.user.id == user.id and request.user.is_superuser is False%}
 
-              <div class="d-flex justify-content-start text-center py-1">
+
+              <div class="d-flex justify-content-start text-center mt-5">
                 <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
                         style="z-index: 1;" onclick="location.href='{% url 'fotos:profile_edit' user.id %}'">
                   Editar perfil
                 </button>
+
+
+              </div>
+              <div class="d-flex justify-content-start text-center mt-1">
+
+                <form action="{% url 'fotos:profile' utilizador.user_id %}" method="POST">
+                  {% csrf_token %}
+                  <input type="hidden" name="eliminar" value="eliminar" />
+                  <button type="submit" class="btn btn-danger" data-mdb-ripple-color="dark"
+                          onclick="return confirm('Tem a certeza que quer eliminar?')"
+                          style="z-index: 1;">
+                    Eliminar perfil
+                  </button>
+
               </div>
               {% endif %}
 
@@ -416,7 +431,7 @@ Perfil
                     </div>
                   </div>
                   <div class="text-muted fs-13px">Email: {{following.email}}
-                    </div>
+                  </div>
                 </div>
                 {% endfor %}
 

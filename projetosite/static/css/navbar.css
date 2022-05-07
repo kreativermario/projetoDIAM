@@ -41,17 +41,17 @@ nav a {
 }
 
 nav a:hover {
-    color: #000;
+    color: #1852be;
 }
 
 nav a::before {
     content: '';
     display: inline-block;
-    height: 5px;
-    background-color: #444;
+    height: 2px;
+    background-color: #2a6565;
 
     position: absolute;
-    top: 0;
+    top: 2;
     width: 0%;
 
     transition: all ease-in-out 250ms;

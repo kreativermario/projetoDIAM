@@ -413,4 +413,6 @@ body {
     }
 }
 
-
+.ignore-css{
+    all:unset;
+}

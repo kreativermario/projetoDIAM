@@ -130,6 +130,19 @@ def comunidade(request):
 def process_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
+    liked = False
+    # Dar like ou dislike
+    if request.method == 'POST':
+        # Se o user já deu like
+        if comentario.likes.filter(id=request.user.id).exists():
+            liked = True
+        if liked is False:
+            comentario.likes.add(request.user.id)
+        else:
+            comentario.likes.remove(request.user.id)
+
+        return redirect('fotos:foto', foto_id)
+    # Caso não seja para dar like ou dislike, é para remover
     if comentario.autor == request.user or request.user.is_superuser:
         comentario.delete()
 
@@ -277,7 +290,7 @@ def registar(request):
                 # Login
                 login(request, user)
 
-                return redirect('fotos:perfil')
+                return redirect('fotos:profile', user.id)
 
     # Processar o template
     else:
@@ -311,40 +324,50 @@ def process_logout(request):
 
 
 def profile(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    utilizador = get_object_or_404(Utilizador, user_id=user.id)
+    user_perfil = get_object_or_404(User, pk=pk)
+    utilizador_perfil = get_object_or_404(Utilizador, user_id=user_perfil.id)
     likes_count = 0
     fotos = Foto.objects.all()
-    fotos_autor = fotos.filter(autor=user.id)
+    fotos_autor = fotos.filter(autor=user_perfil.id)
     autor_count = fotos_autor.count()
     is_following = False
-    if request.user.is_authenticated:
-        utilizador_own = get_object_or_404(Utilizador, user_id=request.user.id)
-    if utilizador.followers.filter(id=request.user.id).exists():
+    if request.user.is_authenticated and request.user.is_superuser is False:
+        utilizador_visitante = get_object_or_404(Utilizador, user_id=request.user.id)
+    if utilizador_perfil.followers.filter(id=request.user.id).exists():
         is_following = True
 
-    following_list = utilizador.following.all()
+    following_list = utilizador_perfil.following.all()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_superuser is False:
         data = request.POST
 
         if request.POST.get('follow') is not None and is_following is False:
-            utilizador.followers.add(request.user)
-            utilizador_own.following.add(user)
+            utilizador_perfil.followers.add(request.user)
+            utilizador_visitante.following.add(user_perfil)
+            utilizador_perfil.save()
+            return redirect(request.META['HTTP_REFERER'])
+
         if request.POST.get('unfollow') is not None and is_following is True:
-            utilizador.followers.remove(request.user)
-            utilizador_own.following.remove(user)
+            utilizador_perfil.followers.remove(request.user)
+            utilizador_visitante.following.remove(user_perfil)
+            utilizador_perfil.save()
+            return redirect(request.META['HTTP_REFERER'])
 
-        utilizador.save()
+        if request.POST.get('eliminar') == 'eliminar':
+            if request.user.id == user_perfil.id:
+                process_logout(request)
+                delete_profile_img(utilizador_perfil)
+                utilizador_perfil.delete()
+                user_perfil.delete()
+                return redirect('fotos:comunidade')
 
-        return redirect(request.META['HTTP_REFERER'])
 
     for foto in fotos:
-        likes_count += foto.likes.filter(id=user.id).count()
+        likes_count += foto.likes.filter(id=user_perfil.id).count()
 
     context = {
-        'utilizador': utilizador,
-        'user': user,
+        'utilizador': utilizador_perfil,
+        'user': user_perfil,
         "fotos": fotos_autor,
         'likes_count': likes_count,
         'autor_count': autor_count,

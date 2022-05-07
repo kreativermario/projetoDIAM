@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %} Comunidade {% endblock %}
-
+{% load custom_tags %}
 {% block content %}
 <div class="container">
     <div class="row bootstrap snippets bootdeys">
@@ -48,7 +48,6 @@
                         {% if request.user.is_authenticated and request.user.id != utilizador.user.id%}
                         <form action="{% url 'fotos:profile' utilizador.user_id %}" method="POST">
                             {% csrf_token %}
-                            {% load custom_tags %}
                             {% is_following request.user.id utilizador.user_id as validation %}
                             {% if validation %}
                             <button type="submit" name="unfollow" class="btn btn-primary">

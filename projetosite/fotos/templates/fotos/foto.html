@@ -3,7 +3,7 @@
 {% block title %}
 Foto
 {% endblock %}
-
+{% load custom_tags %}
 {% block content %}
 <div class="container">
     <div class="row">
@@ -35,10 +35,10 @@ Foto
                         </form>
 
                         {% else %}
-                            {% if user.is_superuser %}
-                            {% else %}
-                                <a class="btn btn-primary" href="{% url 'fotos:login' %}?next={{request.path}}">Faça login para dar like à foto!</a><br>
-                            {% endif %}
+                        {% if user.is_superuser %}
+                        {% else %}
+                        <a class="btn btn-primary" href="{% url 'fotos:login' %}?next={{request.path}}">Faça login para dar like à foto!</a><br>
+                        {% endif %}
                         {% endif %}
 
                         <!--ELIMINAR FOTO-->
@@ -100,8 +100,28 @@ Foto
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </a>
                                     {% endif %}
-
+                                     <div class="btn btn-sm btn-secondary bg-dark mx-1">
+                                        Likes
+                                        <span class="badge bg-light text-dark">
+                                        {{comentario.number_of_likes}}
+                                         </span>
+                                    </div>
                                 </div>
+                                <div class="reply px-4">
+                                    {% if request.user.is_authenticated and is_allowed %}
+                                    <form action="{% url 'fotos:process_comentario' comentario.id %}" method="POST">
+                                        {% csrf_token %}
+                                        {% is_liked request.user.id comentario.id as comentario_is_liked %}
+                                        {% if comentario_is_liked %}
+                                        <button type="submit" name="dislike" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-down" style="color: white"></i></button>
+                                        {% else %}
+                                        <button type="submit" name="like" value="{{object.id}}" class="btn btn-primary"><i class="fa fa-thumbs-up" style="color: white"></i></button>
+                                        {% endif %}
+
+                                    </form>
+                                    {% endif %}
+                                </div>
+
 
                             </div>
                         </div>
