@@ -109,7 +109,10 @@ Galeria
                                 {{foto.titulo}}<span class="badge rounded-pill bg-dark mx-2">{{foto.categoria.nome}}</span>
                             </h5>
                             <p><strong>Autor:</strong>
-                                <span class="badge rounded-pill bg-primary mx-1">{{foto.autor.username}}</span>
+                                <span class="badge rounded-pill bg-primary mx-1">
+                                    <a style="text-decoration: none; color: white"
+                                       href="{% url 'fotos:profile' foto.autor.id %}">{{ foto.autor.username }}</a>
+                                </span>
                             </p>
                             <p><strong>Data de upload:</strong> {{foto.created_date}}</p>
                             <p><strong>Likes:</strong> {{foto.number_of_likes}}</p>

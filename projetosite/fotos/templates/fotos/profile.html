@@ -3,7 +3,7 @@
 {% block title %}
 Perfil
 {% endblock %}
-
+{% load custom_tags %}
 {% block content %}
 
 <section class="h-100 gradient-custom-2">
@@ -335,9 +335,7 @@ height:200px; object-fit: cover;">
               </div>
             </div>
             <div class="p-4 text-black" style="background-color: #f8f9fa;">
-              {% if request.user.is_authenticated and request.user.id == user.id and request.user.is_superuser is False%}
-
-
+              {% if request.user.is_authenticated and request.user.id == user.id and request.user.is_superuser is False %}
               <div class="d-flex justify-content-start text-center mt-5">
                 <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
                         style="z-index: 1;" onclick="location.href='{% url 'fotos:profile_edit' user.id %}'">
@@ -379,7 +377,8 @@ height:200px; object-fit: cover;">
                   <p class="small text-muted mb-0">Likes</p>
                 </div>
                 <div class="px-3">
-                  {% if user.is_authenticated and request.user.id != user.id%}
+                  {% is_member request.user as is_allowed %}
+                  {% if user.is_authenticated and request.user.id != user.id and is_allowed %}
                   <form action="{% url 'fotos:profile' utilizador.user_id %}" method="POST">
                     {% csrf_token %}
                     {% if is_following is True %}
