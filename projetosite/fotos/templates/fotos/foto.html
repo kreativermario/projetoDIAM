@@ -22,7 +22,7 @@ Foto
                                 {{foto.number_of_likes}}
                             </span>
                         </div>
-
+                        {% is_member request.user as is_allowed %}
                         {% if user.is_authenticated and is_allowed %}
                         <form action="{% url 'fotos:foto' foto.id %}" method="POST">
                             {% csrf_token %}
@@ -40,9 +40,9 @@ Foto
                         <a class="btn btn-primary" href="{% url 'fotos:login' %}?next={{request.path}}">Faça login para dar like à foto!</a><br>
                         {% endif %}
                         {% endif %}
-
+                        {% is_staff request.user as is_moderator %}
                         <!--ELIMINAR FOTO-->
-                        {% if user.is_superuser or user.is_authenticated and is_autor %}
+                        {% if user.is_superuser or user.is_authenticated and is_autor or is_moderator %}
                         <a href="{% url 'fotos:eliminarFoto' foto.id %}" class="btn btn-danger mx-1"
                            onclick="return confirm('Tem a certeza que quer eliminar?')">
                             <i class="fa fa-trash" aria-hidden="true"></i>
@@ -82,25 +82,31 @@ Foto
                         </div>
                         {% for comentario in comentarios %}
                         <div class="card p-3 m-2">
+                            {% is_staff comentario.autor as author_is_moderator %}
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="user d-flex flex-row align-items-center">
                                     <img src="{{ comentario.autor.utilizador.image_url }}" width="35" class="user-img rounded-circle mr-5">
                                     <span>
-                                        <small class="font-weight-bold text-primary m-2">{{ comentario.autor }}</small>
+                                        <small class="font-weight-bold text-primary m-2">
+                                            {{ comentario.autor }}
+                                            {% if author_is_moderator %}
+                                            <span class="btn btn-sm btn-success ms-1"><i class="fa fa-user-shield"></i> Moderator</span>
+                                            {% endif %}
+                                        </small>
                                         <small class="font-weight-bold">{{ comentario.texto }}</small>
                                     </span>
                                 </div> <small>{{comentario.created_date }}</small>
                             </div>
                             <div class="action d-flex justify-content-between mt-2 align-items-center">
                                 <div class="reply px-4">
-                                    {% if request.user == comentario.autor or request.user.is_superuser%}
+                                    {% if request.user == comentario.autor or request.user.is_superuser or is_moderator %}
                                     <a href="{% url 'fotos:process_comentario' comentario.id %}"
                                        class="btn btn-sm btn-danger"
                                        onclick="return confirm('Tem a certeza que quer eliminar?')">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </a>
                                     {% endif %}
-                                     <div class="btn btn-sm btn-secondary bg-dark mx-1">
+                                    <div class="btn btn-sm btn-secondary bg-dark mx-1">
                                         Likes
                                         <span class="badge bg-light text-dark">
                                         {{comentario.number_of_likes}}

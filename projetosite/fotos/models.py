@@ -65,5 +65,6 @@ class Utilizador(models.Model):
             ("criar_post", "Pode criar posts"),
             ("criar_like_dislike", "Pode dar likes ou dislikes"),
             ("criar_comentario", "Pode criar comentários"),
+            ("dar_follow", "Pode dar follow a outro utilizador")
         ]
 

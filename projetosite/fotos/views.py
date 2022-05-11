@@ -35,6 +35,8 @@ def delete_profile_img(utilizador):
         utilizador.profile_img.delete()
 
 
+def is_staff(user):
+    return user.groups.filter(name='utilizadores_staff').exists()
 
 
 
@@ -127,6 +129,8 @@ def comunidade(request):
 
 
 # View que elimina comentário
+@login_required(login_url=reverse_lazy('fotos:login'))
+@user_passes_test(is_member, login_url=reverse_lazy('fotos:no_perms_page'))
 def process_comentario(request, pk):
     comentario = get_object_or_404(Comentario, pk=pk)
     foto_id = comentario.foto.id
@@ -143,16 +147,19 @@ def process_comentario(request, pk):
 
         return redirect('fotos:foto', foto_id)
     # Caso não seja para dar like ou dislike, é para remover
-    if comentario.autor == request.user or request.user.is_superuser:
+    if comentario.autor == request.user or request.user.is_superuser\
+            or is_staff(request.user):
         comentario.delete()
 
     return redirect('fotos:foto', foto_id)
 
 
 # View que elimina a foto
+@login_required(login_url=reverse_lazy('fotos:login'))
+@user_passes_test(is_member, login_url=reverse_lazy('fotos:no_perms_page'))
 def removerFoto(request, pk):
     foto = get_object_or_404(Foto, pk=pk)
-    if foto.autor == request.user or request.user.is_superuser:
+    if foto.autor == request.user or request.user.is_superuser or is_staff(request.user):
         foto.imagem.delete()
         foto.delete()
         return redirect('fotos:galeria')
@@ -165,7 +172,6 @@ def verFoto(request, pk):
     foto = get_object_or_404(Foto, pk=pk)
     comentarios = Comentario.objects.filter(foto_id=pk).order_by('-created_date')
     likes = foto.number_of_likes()
-    is_allowed = is_member(request.user)
     is_autor = False
     liked = False
 
@@ -206,7 +212,6 @@ def verFoto(request, pk):
         'foto': foto,
         'likes': likes,
         'foto_is_liked': liked,
-        'is_allowed': is_allowed,
         'comentarios': comentarios,
         'is_autor': is_autor,
     }
@@ -331,6 +336,7 @@ def profile(request, pk):
     fotos_autor = fotos.filter(autor=user_perfil.id)
     autor_count = fotos_autor.count()
     is_following = False
+    utilizador_visitante = None
     if request.user.is_authenticated and request.user.is_superuser is False:
         utilizador_visitante = get_object_or_404(Utilizador, user_id=request.user.id)
     if utilizador_perfil.followers.filter(id=request.user.id).exists():
@@ -338,29 +344,31 @@ def profile(request, pk):
 
     following_list = utilizador_perfil.following.all()
 
-    if request.method == 'POST' and request.user.is_superuser is False:
-        data = request.POST
+    if request.method == 'POST':
 
-        if request.POST.get('follow') is not None and is_following is False:
+        if request.POST.get('follow') is not None and is_following is False \
+                and utilizador_visitante is not None:
             utilizador_perfil.followers.add(request.user)
             utilizador_visitante.following.add(user_perfil)
             utilizador_perfil.save()
             return redirect(request.META['HTTP_REFERER'])
 
-        if request.POST.get('unfollow') is not None and is_following is True:
+        if request.POST.get('unfollow') is not None and is_following is True \
+                and utilizador_visitante is not None:
             utilizador_perfil.followers.remove(request.user)
             utilizador_visitante.following.remove(user_perfil)
             utilizador_perfil.save()
             return redirect(request.META['HTTP_REFERER'])
 
         if request.POST.get('eliminar') == 'eliminar':
+
             if request.user.id == user_perfil.id:
                 process_logout(request)
+            if request.user.is_superuser or request.user.id == user_perfil.id:
                 delete_profile_img(utilizador_perfil)
                 utilizador_perfil.delete()
                 user_perfil.delete()
                 return redirect('fotos:comunidade')
-
 
     for foto in fotos:
         likes_count += foto.likes.filter(id=user_perfil.id).count()

@@ -20,3 +20,14 @@ def is_liked(request_user_id, comentario_pk):
     if comentario.likes.filter(id=request_user_id).exists():
         return True
     return False
+
+
+@register.simple_tag(name="is_member")
+# Ver se tem permissões!
+def is_member(user):
+    return user.groups.filter(name='utilizadores').exists()
+
+
+@register.simple_tag(name="is_staff")
+def is_staff(user):
+    return user.groups.filter(name='utilizadores_staff').exists()

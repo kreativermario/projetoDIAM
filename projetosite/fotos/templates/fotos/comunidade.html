@@ -26,8 +26,16 @@
                 <img src="{{ utilizador.image_url }}" class="img-rounded">
                 <i class="fa fa-forward"></i>
             </a>
+            {% is_staff utilizador.user as is_moderator %}
             <div class="member-details">
-                <h4> <a style="font-size: 28px" href="{% url 'fotos:profile' utilizador.user_id %}">{{ utilizador.user.username }} </a> </h4>
+                <h4>
+                    <a style="font-size: 28px" href="{% url 'fotos:profile' utilizador.user_id %}">
+                        {{ utilizador.user.username }}
+                    </a>
+                    {% if is_moderator %}
+                    <span class="btn btn-sm btn-success ms-2"><i class="fa fa-user-shield"></i> Moderator</span>
+                    {% endif %}
+                </h4>
                 <div class="row info-list">
                     <div class="col-sm-4">
                         <i class="fa fa-user"></i>
@@ -40,12 +48,14 @@
                         <a style="font-size: 18px" href=" ">{{ utilizador.user.email }}</a>
                     </div>
                     <div class="col-sm-4">
-                        <i class="fa fa-history"><p class="text-muted fs-13px">{{utilizador.user.last_login}}</p></i>
+                        <p class="text-muted fs-13px"><i class="fa fa-history"> {{utilizador.user.last_login}}</i></p>
                     </div>
                     <div class="col-sm-4">
                     </div>
                     <div class="col-sm-4">
-                        {% if request.user.is_authenticated and request.user.id != utilizador.user.id%}
+                        {% if request.user.is_authenticated %}
+                        {% is_member request.user as is_allowed %}
+                        {% if request.user.id != utilizador.user.id and is_allowed %}
                         <form action="{% url 'fotos:profile' utilizador.user_id %}" method="POST">
                             {% csrf_token %}
                             {% is_following request.user.id utilizador.user_id as validation %}
@@ -60,6 +70,7 @@
                             {% endif %}
 
                         </form>
+                        {% endif %}
                         {% endif %}
                     </div>
                     <div class="clear"></div>

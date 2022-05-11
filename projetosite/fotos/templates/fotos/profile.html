@@ -320,7 +320,7 @@ Perfil
 
             <div class="rounded-top text-white d-flex flex-row"
                  style="background-image: url('/static/images/profile/background/profile_background.jpg');
-                 height:200px; object-fit: cover;">
+height:200px; object-fit: cover;">
 
               <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
                 <img src="{{ utilizador.image_url }}"
@@ -343,9 +343,9 @@ Perfil
                         style="z-index: 1;" onclick="location.href='{% url 'fotos:profile_edit' user.id %}'">
                   Editar perfil
                 </button>
-
-
               </div>
+              {% endif %}
+              {% if request.user.is_authenticated and request.user.id == user.id or request.user.is_superuser %}
               <div class="d-flex justify-content-start text-center mt-1">
 
                 <form action="{% url 'fotos:profile' utilizador.user_id %}" method="POST">
@@ -359,6 +359,7 @@ Perfil
 
               </div>
               {% endif %}
+
 
               <div class="d-flex justify-content-end text-center py-1">
                 <div>
@@ -420,11 +421,16 @@ Perfil
               <div class="row">
 
                 {% for following in following_list %}
+                {% is_staff following.utilizador.user as is_moderator %}
                 <div class="list-group-item d-flex align-items-center justify-content-between">
                   <img src="{{following.utilizador.image_url}}" alt="" width="50px" class="rounded-sm ml-n2 me-2" />
                   <div class="flex-fill pl-3 pr-3">
+
                     <div><a href="{% url 'fotos:profile' following.id %}" class="text-dark font-weight-600">
                       {{following.first_name}} {{following.last_name}}</a>
+                      {% if is_moderator %}
+                      <span class="btn btn-sm btn-success ms-1"><i class="fa fa-user-shield"></i> Moderator</span>
+                      {% endif %}
                     </div>
                     <div class="text-muted fs-13px">Followers:
                       <span class="badge bg-secondary">{{following.utilizador.number_of_followers}}</span>

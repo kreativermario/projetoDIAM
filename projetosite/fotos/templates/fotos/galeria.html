@@ -3,7 +3,7 @@
 {% block title %}
 Galeria
 {% endblock %}
-
+{% load custom_tags %}
 {% block content %}
 <div class="container">
 
@@ -70,11 +70,14 @@ Galeria
                             </button>
                         </form>
                     </li>
-                    {% if user.is_authenticated %}
+                    {% is_member request.user as is_allowed %}
+                    {% if user.is_authenticated and is_allowed %}
                     <li class="list-group-item">
                         <a href="{% url 'fotos:criar' %}" class="btn btn-dark btn-sm m-1">
                             Adicionar foto</a>
                     </li>
+                    {% endif %}
+                    {% if user.is_authenticated %}
                     <li class="list-group-item">
                         <a href="{% url 'fotos:profile' request.user.id %}" class="btn btn-dark btn-sm m-1">
                             Perfil</a>
@@ -111,7 +114,8 @@ Galeria
                             <p><strong>Data de upload:</strong> {{foto.created_date}}</p>
                             <p><strong>Likes:</strong> {{foto.number_of_likes}}</p>
                             <!--ELIMINAR FOTO-->
-                            {% if user.is_authenticated and user.is_superuser %}
+                            {% is_staff request.user as is_moderator %}
+                            {% if user.is_authenticated and user.is_superuser or is_moderator %}
                             <a href="{% url 'fotos:eliminarFoto' foto.id %}" class="btn btn-danger"
                                onclick="return confirm('Tem a certeza que quer eliminar?')">
                                 <i class="fa fa-trash" aria-hidden="true"></i>
