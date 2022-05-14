@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django import template
 
-from fotos.models import Utilizador, Comentario
+from fotos.models import Utilizador, Comentario, Rating
 
 register = template.Library()
 
@@ -20,6 +20,15 @@ def is_liked(request_user_id, comentario_pk):
     if comentario.likes.filter(id=request_user_id).exists():
         return True
     return False
+
+
+@register.simple_tag(name="get_rating")
+def get_rating(foto_id):
+    try:
+        rating = Rating.objects.get(foto_id=foto_id)
+    except Rating.DoesNotExist:
+        rating = None
+    return rating
 
 
 @register.simple_tag(name="is_member")

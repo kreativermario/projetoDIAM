@@ -4,7 +4,7 @@ import django.urls
 from django.views import View
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Categoria, Foto, Utilizador, Comentario
+from .models import Categoria, Foto, Utilizador, Comentario, Rating
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
@@ -186,6 +186,20 @@ def verFoto(request, pk):
     # Se houver um like ou dislike
     if request.method == 'POST':
 
+        # Moderador faz rating da foto, criar ou alterar
+        if request.POST.get('rating') is not None and is_staff(request.user):
+            if Rating.objects.filter(foto_id=pk).exists():
+                rating = Rating.objects.get(foto_id=pk)
+                rating.rating = request.POST.get('rating')
+                rating.user_rater_id = request.user.id
+            else:
+                rating, created = Rating.objects.get_or_create(
+                    rating=request.POST.get('rating'),
+                    user_rater_id=request.user.id,
+                    foto_id=pk
+                )
+            rating.save()
+
         # Dar like só se ainda não deu like
         if request.POST.get('like') is not None and liked is False:
             foto.likes.add(request.user)
@@ -207,6 +221,7 @@ def verFoto(request, pk):
 
         # Fazer 'refresh' para a página anterior que era esta
         return redirect(request.META['HTTP_REFERER'])
+
 
     context = {
         'foto': foto,
@@ -236,7 +251,7 @@ def criarFoto(request):
         elif data['novaCategoria'] != '':
             # Cria uma categoria se já não existir.
             # Se já existir, faz um get e coloca na variavel categoria
-            categoria, novaCategoria = Categoria.objects.get_or_create(nome=data['novaCategoria'])
+            categoria, created = Categoria.objects.get_or_create(nome=data['novaCategoria'])
         else:
             categoria = None
 

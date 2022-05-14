@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
-from django.core.validators import MinValueValidator, MinLengthValidator, MaxLengthValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -28,6 +28,14 @@ class Foto(models.Model):
 
     class Meta:
         ordering = ('created_date',)
+
+
+class Rating(models.Model):
+    foto = models.ForeignKey(Foto, on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    user_rater = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
 
 
 class Comentario(models.Model):
