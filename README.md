@@ -11,3 +11,8 @@ It's a simple website where an user can create an account, publish photos, comme
 - HTML
 - CSS
 - JavaScript
+
+## Group Members
+- Francisco Torgo - [GitHub](https://github.com/TRODSft)
+- Mário Cao - [GitHub](https://github.com/kreativermario)
+- Rui Duarte - [GitHub](https://github.com/Ruisth)
